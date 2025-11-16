@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Appointments;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateAppointmentRequest extends FormRequest
+class StoreAppointmentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check();
     }
 
     /**
@@ -23,6 +23,8 @@ class UpdateAppointmentRequest extends FormRequest
     {
         return [
             //
+            'symptoms' => 'required|string|min:10|max:255',
+            'scheduled_at' => 'required|date',
         ];
     }
 }

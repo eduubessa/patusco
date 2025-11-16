@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
             $table->string('symptoms');
+            $table->datetime('scheduled_at');
+            $table->enum('status', ['pendente', 'aceite', 'rejeitado'])->default('pendente');
             $table->timestamps();
         });
     }
