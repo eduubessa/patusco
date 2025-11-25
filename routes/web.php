@@ -6,6 +6,7 @@ use App\Http\Controllers\Appointment\DeleteAppointmentController;
 use App\Http\Controllers\Appointment\ListAppointmentsController;
 use App\Http\Controllers\Appointment\ShowAppointmentController;
 use App\Http\Controllers\Customer\ListCustomersController;
+use App\Http\Controllers\Doctors\ListDoctorController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -46,7 +47,7 @@ Route::prefix('animals')->middleware(['auth', 'verified'])->name('animals')->gro
 });
 
 Route::prefix('doctors')->middleware(['auth', 'verified'])->name('doctors')->group(function () {
-    Route::get('/', ListAppointmentsController::class)->name('.list')->middleware('can:admin,receptionist,customer,doctor');
+    Route::get('/', ListDoctorController::class)->name('.list')->middleware('can:admin,receptionist,customer,doctor');
     Route::get('/new', [CreateAppointmentController::class, 'create'])->name('.create');
     Route::post('/', CreateAppointmentController::class)->name('.store');
     Route::get('/{id}', ShowAppointmentController::class)->name('.index')->middleware('can:admin,receptionist,doctor,customer');

@@ -82,4 +82,24 @@ class User extends Authenticatable
     {
         return in_array($this->role, $roles);
     }
+
+    public function scopeCustomer($query)
+    {
+        return $query->where('role', 'customer');
+    }
+
+    public function scopeDoctor($query)
+    {
+        return $query->where('role', 'doctor');
+    }
+
+    public function scopeAdmin($query)
+    {
+        return $query->where('role', 'admin');
+    }
+
+    public function scopeReceptionist($query)
+    {
+        return $query->where('role', 'receptionist');
+    }
 }
