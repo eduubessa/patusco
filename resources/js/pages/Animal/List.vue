@@ -8,20 +8,27 @@ import { type Animal, type PaginatedData } from '@/types/Animal';
 import {
     calculateAge,
     formatDateTime,
+    generateHashedColor,
+    getInitials,
+    riendlyIdFormatter,
 } from '@/utils/formatters';
+import StatCard from '@/components/StatCard.vue';
 
 interface Props {
-    animals_data: PaginatedData<Animal>,
-    breadcrumbs: BreadcrumbItem[]
+    animals_data: PaginatedData<Animal>;
+    breadcrumbs: BreadcrumbItem[];
 }
 
 const props = defineProps<Props>();
 
 const headers = [
-    { title: 'ID', key: 'id'},
+    { title: 'ID', key: 'id' },
+    { title: '', key: 'avatar', align: 'center' },
     { title: 'Nome', key: 'name' },
     { title: 'Idade', key: 'birthday' },
-    { title: 'Veternário', key: 'doctor.name'},
+    { title: 'Espécie', key: 'species' },
+    { title: 'Raça', key: 'breed' },
+    { title: 'Veternário', key: 'doctor.name' },
     { title: 'Criado em', key: 'created_at' },
     { title: 'Atualizado em', key: 'updated_at' },
     {
@@ -34,21 +41,22 @@ const headers = [
 ];
 
 const data = computed(() => {
-    console.log(props.animals_data)
-
-    return props.animals_data.data.map((animal, index) => ({
+    return props.animals_data.data.map((animal) => ({
         ...animal,
-        line_number: index + 1,
-        birthday: calculateAge(animal.birthday) + " anos",
+        id: animal.registration_id,
+        avatar: getInitials(animal.name),
+        avatarColor: generateHashedColor(animal.name),
+        birthday: calculateAge(animal.birthday) + ' anos',
         created_at: formatDateTime(animal.created_at),
         updated_at: formatDateTime(animal.updated_at),
     }));
 });
 
-
-
-const handleOpenCustomerDetailPage = (event: Event, { item }: { item: any}) => {
-    if(item.id){
+const handleOpenCustomerDetailPage = (
+    event: Event,
+    { item }: { item: any },
+) => {
+    if (item.id) {
         window.location.href = animals.list().url;
     }
 
@@ -58,19 +66,51 @@ const handleOpenCustomerDetailPage = (event: Event, { item }: { item: any}) => {
 const handlePageChange = (page: number) => {
     router.get(
         animals.list().url,
-        { page: page},
-        { preserveState: true, replace: true }
-    )
+        { page: page },
+        { preserveState: true, replace: true },
+    );
 };
+
 </script>
 
 <template>
     <Head title="Animais" />
-
-    <AppLayout :breadcrumbs="breadcrumbs">
+    <AppLayout :breadcrumbs="breadcrumbs" title="Animais" description="Lista de todos os animais">
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
+            <v-container>
+                <v-row class="mt-4">
+                    <v-col cols="12" md="4" lg="4">
+                        <StatCard
+                            title="Total de animais"
+                            :value="animals_data.total"
+                            variation-value="4.2%"
+                            variation-unit=""
+                            :is-positive="true"
+                        />
+                    </v-col>
+                    <v-col cols="12" md="4" lg="4">
+                        <StatCard
+                            title="Novas Consultas"
+                            :value="298"
+                            variation-value="3.6%"
+                            variation-unit=""
+                            :is-positive="true"
+                        />
+                    </v-col>
+                    <v-col cols="12" md="4" lg="4">
+                        <StatCard
+                            title=""
+                            :value="427"
+                            variation-value="1.5%"
+                            variation-unit=""
+                            :is-positive="false"
+
+                        />
+                    </v-col>
+                </v-row>
+            </v-container>
             <v-data-table-virtual
                 :headers="headers"
                 :items="data"
@@ -101,7 +141,6 @@ const handlePageChange = (page: number) => {
                         >
                             <v-icon size="small">mdi-pencil</v-icon>
                         </v-btn>
-
                         <v-btn
                             icon
                             size="small"
@@ -114,7 +153,7 @@ const handlePageChange = (page: number) => {
                     </div>
                 </template>
             </v-data-table-virtual>
-            <div class="mt-6 flex justify-center my-5 text-sm">
+            <div class="my-5 mt-6 flex justify-center text-sm">
                 <v-pagination
                     :length="props.animals_data.last_page"
                     :model-value="props.animals_data.current_page"

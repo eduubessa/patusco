@@ -22,7 +22,7 @@ Route::get('dashboard', function () {
 
 
 Route::prefix('appointments')->middleware(['auth', 'verified'])->name('appointments')->group(function () {
-    Route::get('/', ListAppointmentsController::class)->name('.list')->middleware('can:admin,receptionist,customer');
+    Route::get('/', ListAppointmentsController::class)->name('.list')->middleware('can:admin,receptionist,customer,doctor');
     Route::get('/new', [CreateAppointmentController::class, 'create'])->name('.create');
     Route::post('/', CreateAppointmentController::class)->name('.store');
     Route::get('/{id}', ShowAppointmentController::class)->name('.index')->middleware('can:admin,receptionist,doctor,customer');
@@ -30,7 +30,7 @@ Route::prefix('appointments')->middleware(['auth', 'verified'])->name('appointme
 });
 
 Route::prefix('customers')->middleware(['auth', 'verified'])->name('customers')->group(function () {
-    Route::get('/', ListCustomersController::class)->name('.list')->middleware('can:admin,receptionist,customer');
+    Route::get('/', ListCustomersController::class)->name('.list')->middleware('can:admin,receptionist,customer,doctor');
     Route::get('/new', [CreateAppointmentController::class, 'create'])->name('.create');
     Route::post('/', CreateAppointmentController::class)->name('.store');
     Route::get('/{id}', ShowAppointmentController::class)->name('.index')->middleware('can:admin,receptionist,doctor,customer');

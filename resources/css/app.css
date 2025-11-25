@@ -1,3 +1,10 @@
 @import "tailwindcss";
 @import "vuetify/styles";
 
+.v-btn-circle {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50% !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+}

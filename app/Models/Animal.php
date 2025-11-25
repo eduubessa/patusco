@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\AnimalFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,9 +28,44 @@ class Animal extends Model
         'doctor_id' => 'string'
     ];
 
+    protected $appends = [
+        "registration_id"
+    ];
+
     protected $with = [
         'doctor'
     ];
+
+    protected function registrationId(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?int $value, array $attributes) => $this->formatRegistrationId($attributes['id']),
+        );
+    }
+
+    private function formatRegistrationId(string $uuid): string
+    {
+        $groups = explode('-', $uuid);
+        if (count($groups) !== 5) {
+            return 'ERR-UUID';
+        }
+
+        $chars = [];
+        $prefix = 'V';
+
+        for ($i = 0; $i < 5; $i++) {
+            $groupChars = str_split($groups[$i]);
+            if (isset($groupChars[3])) {
+                $chars[] = $groupChars[3];
+            } else {
+                $chars[] = 'X'; // Caractere de fallback
+            }
+        }
+
+        $rawId = implode('', $chars); // Ex: A53A0
+
+        return "{$prefix}-" . strtoupper($rawId); // Ex: V-A53A0
+    }
 
     public function owners(): BelongsToMany
     {

@@ -3,13 +3,14 @@
 namespace App\Actions\Animal;
 
 use App\Models\Animal;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ListAnimals
 {
     /**
      * Create a new class instance.
      */
-    public function handle(string $sortBy = "updated_at", string $direction = "desc", int $perPage = 20)
+    public function handle(string $sortBy = "updated_at", string $direction = "desc", int $perPage = 7): LengthAwarePaginator
     {
         //
         $columns = ['id', 'name', 'birthday', 'species', 'breed'];

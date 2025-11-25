@@ -7,7 +7,7 @@ use App\Models\User;
 
 class ListCustomers
 {
-    public function handle(string $sortBy = "updated_at", string $direction = "desc", int $perPage = 20)
+    public function handle(string $sortBy = "updated_at", string $direction = "desc", int $perPage = 12)
     {
         //
         $columns = ['id', 'name', 'username', 'email', 'created_at', 'updated_at'];
