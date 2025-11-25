@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('animals', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
-            $table->text('sex', 1)->default('M');
+            $table->string('sex')->default('M');
             $table->date('birthday');
             $table->string('species');
             $table->string('breed')->nullable();
