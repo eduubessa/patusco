@@ -4,7 +4,9 @@ export interface Animal {
     birthday: Date,
     species: string,
     breed: string,
-    doctor?: object
+    doctor?: object,
+    owners?: Array
+    appointments?: Array
 }
 
 export interface PaginatedData<T> {

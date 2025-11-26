@@ -36,4 +36,14 @@ class Appointment extends Model
     {
         return $this->belongsTo(Animal::class, 'animal_id');
     }
+
+    public function scopeForUser($query, User $user)
+    {
+        if(in_array($user->role, ['admin', 'receptionist'])) return $query; // Without filter
+
+        if($user->role === 'doctor') return $query->where('doctor_id', $user->id);
+        if($user->role === 'customer') return $query->where('author_id', $user->id);
+
+        return $query->whereRaw('0 = 1'); // 0 rows if role invalid!
+    }
 }

@@ -26,18 +26,14 @@ import { computed } from 'vue';
 
 interface Props {
     breadcrumbs?: BreadcrumbItem[];
+    title: string;
+    description: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
-    title: {
-        type: String,
-        required: true,
-    },
-    description: {
-        type: String,
-        required: true,
-    },
+    title: '',
+    description: ''
 });
 
 const page = usePage();

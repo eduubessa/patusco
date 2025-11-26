@@ -29,6 +29,7 @@ return new class extends Migration
         });
 
         Schema::create('animal_user', function (Blueprint $table) {
+            $table->id();
             $table->foreignUuid('animal_id')
                 ->references('id')
                 ->on('animals')
@@ -40,7 +41,6 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->boolean('main_owner')->default(false);
-            $table->primary('animal_id', 'owner_id');
             $table->timestamps();
             $table->softDeletes();
         });

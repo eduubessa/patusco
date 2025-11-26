@@ -22,7 +22,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const headers = [
-    { title: 'ID', key: 'id' },
+    { title: 'Referência', key: 'ref' },
     { title: '', key: 'avatar', align: 'center' },
     { title: 'Nome', key: 'name' },
     { title: 'Idade', key: 'birthday' },
@@ -43,7 +43,7 @@ const headers = [
 const data = computed(() => {
     return props.animals_data.data.map((animal) => ({
         ...animal,
-        id: animal.registration_id,
+        ref: animal.registration_id,
         avatar: getInitials(animal.name),
         avatarColor: generateHashedColor(animal.name),
         birthday: calculateAge(animal.birthday) + ' anos',
@@ -57,7 +57,7 @@ const handleOpenCustomerDetailPage = (
     { item }: { item: any },
 ) => {
     if (item.id) {
-        window.location.href = animals.list().url;
+        window.location.href = `/animals/${item.id}`;
     }
 
     debugger;
@@ -93,7 +93,7 @@ const handlePageChange = (page: number) => {
                     <v-col cols="12" md="4" lg="4">
                         <StatCard
                             title="Novas Consultas"
-                            :value="298"
+                            :value="0"
                             variation-value="3.6%"
                             variation-unit=""
                             :is-positive="true"

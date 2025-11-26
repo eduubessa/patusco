@@ -35,7 +35,7 @@ const headers = [
 ];
 
 const data = computed(() => {
-    return props.doctors_data.data.map((doctor, index) => ({
+    return doctors_data.data.map((doctor, index) => ({
         ...doctor,
         line_number: index + 1,
         avatar: getInitials(doctor.name),
@@ -65,7 +65,7 @@ const handlePageChange = (page: number) => {
 <template>
     <Head title="Utentes" />
 
-    <AppLayout :breadcrumbs="breadcrumbs">
+    <AppLayout :breadcrumbs="breadcrumbs" :title="'Veternários'"  :description="'Lista dos veternários'">
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
@@ -114,8 +114,8 @@ const handlePageChange = (page: number) => {
             </v-data-table-virtual>
             <div class="mt-6 flex justify-center my-5 text-sm">
                 <v-pagination
-                    :length="props.doctors_data.last_page"
-                    :model-value="props.doctors_data.current_page"
+                    :length="doctors_data.last_page"
+                    :model-value="doctors_data.current_page"
                     :total-visible="5"
                     @update:model-value="handlePageChange"
                     color="indigo-darken-3"
