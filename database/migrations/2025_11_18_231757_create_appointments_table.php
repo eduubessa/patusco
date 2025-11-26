@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('author_id');
+            $table->foreignUuid('customer_id');
             $table->foreignUuid('animal_id');
             $table->foreignUuid('doctor_id');
             $table->longText('situation');

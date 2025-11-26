@@ -21,11 +21,13 @@ class AppointmentFactory extends Factory
      */
     public function definition(): array
     {
+        $customer = User::factory()->verified()->create(['role' => 'customer']);
         $animal = Animal::inRandomOrder()->first() ?? Animal::factory()->create();
         $doctor = User::doctor()->inRandomOrder()->first() ?? User::factory()->create(['role' => 'doctor']);
 
         return [
             //
+            'customer_id' => $customer->id,
             'animal_id' => $animal->id,
             'doctor_id' => $doctor->id,
             'situation' => $this->faker->realText(30),

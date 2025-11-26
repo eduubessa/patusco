@@ -7,21 +7,27 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ListAppointmentsController extends Controller
 {
-    use AuthorizesRequests;
     //
-    public function __invoke(ListAppointments $action)
+    use AuthorizesRequests;
+
+    public function __invoke(Request $request, ListAppointments $action)
     {
         $this->authorize('viewAny', Appointment::class);
 
-        $appointments = $action->handle(user: auth()->user());
+        $sortBy = $request->query('sort');
+        $sortDirection = $request->query('direction');
+
+        $appointments = $action->handle(auth()->user(), $sortBy, $sortDirection);
 
         return Inertia::render('Appointment/Calendar', [
             'events' => $appointments,
+            'sort_by' => $sortBy,
+            'sort_direction' => $sortDirection,
         ]);
     }
 }

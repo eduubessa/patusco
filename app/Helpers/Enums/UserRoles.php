@@ -5,8 +5,8 @@ namespace App\Helpers\Enums;
 enum UserRoles: string
 {
     //
-    case SuperAdmin = 'admin';
+    case Admin = 'admin';
     case Customer = 'customer';
     case Receptionist = 'receptionist';
-    case Veterinary = 'veterinary';
+    case Doctor = 'doctor';
 }

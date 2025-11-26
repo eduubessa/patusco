@@ -2,32 +2,32 @@
 
 namespace App\Policies;
 
+use App\Helpers\Enums\UserRoles;
 use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class AppointPolicy
+class AppointmentPolicy
 {
+    private const FULL_ACCESS = [UserRoles::Admin->value, UserRoles::Receptionist->value];
+    private const ALL_ROLES = [UserRoles::Admin->value, UserRoles::Doctor->value, UserRoles::Receptionist->value, UserRoles::Doctor->value];
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'receptionist', 'doctor', 'customer']);
-    }
-
-    public function viewAll(User $user): bool
-    {
-        return in_array($user->role, ['admin', 'receptionist']);
+        return in_array($user->role, self::ALL_ROLES, true);
     }
 
     public function view(User $user, Appointment $appointment): bool
     {
-        if($this->viewAll($user)) return true;
-        if($user->role === 'doctor') return $appointment->doctor_id === $user->id;
-        if($user->role === 'customer') return $appointment->customer_id === $user->id;
-
-        return false;
+        return match($user->role){
+            UserRoles::Admin->value, UserRoles::Receptionist->value => true,
+            UserRoles::Doctor->value => $appointment->doctor_id === $user->id,
+            UserRoles::Customer->value => $appointment->customer_id === $user->id,
+            default => false
+        };
     }
 
     /**
@@ -35,7 +35,7 @@ class AppointPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'receptionist', 'customer']);
+        return in_array($user->role, ['admin', 'receptionist', 'customer'], true);
     }
 
     /**
@@ -43,7 +43,7 @@ class AppointPolicy
      */
     public function update(User $user, Appointment $appointment): bool
     {
-        return in_array($user->role, ['admin', 'receptionist']);
+        return in_array($user->role, self::FULL_ACCESS, true);
     }
 
     /**
@@ -51,7 +51,7 @@ class AppointPolicy
      */
     public function delete(User $user, Appointment $appointment): bool
     {
-        return $user->role === 'admin' || $appointment->author_id === $user->id;
+        return $user->role === UserRoles::Admin;
     }
 
     /**
