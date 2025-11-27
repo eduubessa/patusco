@@ -5,11 +5,11 @@ namespace App\Policies;
 use App\Helpers\Enums\UserRoles;
 use App\Models\Appointment;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class AppointmentPolicy
 {
     private const FULL_ACCESS = [UserRoles::Admin->value, UserRoles::Receptionist->value];
+
     private const ALL_ROLES = [UserRoles::Admin->value, UserRoles::Doctor->value, UserRoles::Receptionist->value, UserRoles::Doctor->value];
 
     /**
@@ -17,12 +17,12 @@ class AppointmentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, self::ALL_ROLES, true);
+        return in_array($user->role, ['admin', 'receptionist', 'doctor', 'customer']);
     }
 
     public function view(User $user, Appointment $appointment): bool
     {
-        return match($user->role){
+        return match ($user->role) {
             UserRoles::Admin->value, UserRoles::Receptionist->value => true,
             UserRoles::Doctor->value => $appointment->doctor_id === $user->id,
             UserRoles::Customer->value => $appointment->customer_id === $user->id,

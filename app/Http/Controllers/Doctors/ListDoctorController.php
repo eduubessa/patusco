@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Doctors;
 
-use App\Actions\Customers\ListCustomers;
 use App\Actions\Doctors\ListDoctors;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

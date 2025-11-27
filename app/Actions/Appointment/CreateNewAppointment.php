@@ -2,22 +2,36 @@
 
 namespace App\Actions\Appointment;
 
-use App\Helpers\Enums\AppointmentStatus;
 use App\Models\Appointment;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CreateNewAppointment
 {
-    public function create(array $input, string $owner_id): Appointment
+    public function handle(array $data): Appointment
     {
-        $schedule_at = Carbon::parse($input['schedule_at']);
+        return DB::transaction(function () use ($data) {
+            $data['slug'] = $this->generateUniqueSlug();
 
-        return Appointment::create([
-            'owner_id' => $owner_id,
-            'animal_id' => $input['animal_id'],
-            'situation' => $input['situation'],
-            'schedule_at' => $schedule_at,
-            'status' => AppointmentStatus::Pending->value
-        ]);
+            return Appointment::create([
+                'author_id' => $data['author'],
+                'customer_id' => $data['customer'],
+                'doctor_id' => $data['doctor'],
+                'animal_id' => $data['animal'],
+                'situation' => $data['situation'],
+                'scheduled_at' => $data['scheduled_at'],
+                'status' => $data['status'],
+                'slug' => $data['slug'],
+            ]);
+        });
+    }
+
+    protected function generateUniqueSlug(): string
+    {
+        do {
+            $slug = substr(hash('xxh3', microtime(true).Str::uuid()), 0, 12);
+        } while (Appointment::where('slug', $slug)->exists());
+
+        return $slug;
     }
 }

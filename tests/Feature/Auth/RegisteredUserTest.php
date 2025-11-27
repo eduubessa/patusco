@@ -9,12 +9,12 @@ test('login screen can be rendered', function () {
 
 test('users can authenticate using login screen', function () {
     $user = User::factory()->create([
-        'email_verified_at' => now()
+        'email_verified_at' => now(),
     ]);
 
     $response = $this->post('/login', [
         'email' => $user->email,
-        'password' => 'password'
+        'password' => 'password',
     ]);
 
     $response->assertStatus(302);
@@ -25,13 +25,13 @@ test('users can authenticate using login screen', function () {
 
 test('users can\'t authenticate using login screen', function () {
     $user = User::factory()->create([
-        'email_verified_at' => now()
+        'email_verified_at' => now(),
     ]);
 
     $response = $this->post('/login', [
         'username' => $user->username,
         'email' => $user->email,
-        'password' => 'password'
+        'password' => 'password',
     ]);
 
     $response->assertStatus(302);

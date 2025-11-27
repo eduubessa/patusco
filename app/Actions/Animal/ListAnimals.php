@@ -10,14 +10,14 @@ class ListAnimals
     /**
      * Create a new class instance.
      */
-    public function handle(string $sortBy = "updated_at", string $direction = "desc", int $perPage = 7): LengthAwarePaginator
+    public function handle(string $sortBy = 'updated_at', string $direction = 'desc', int $perPage = 7): LengthAwarePaginator
     {
         //
         $columns = ['id', 'name', 'birthday', 'species', 'breed'];
-        $query = Animal::with("owners");
+        $query = Animal::with('owners');
         $direction = in_array($direction, ['asc', 'desc']) ? $direction : 'desc';
 
-        if($sortBy && in_array($sortBy, $columns) && $direction && in_array($direction, ['asc', 'desc'])){
+        if ($sortBy && in_array($sortBy, $columns) && $direction && in_array($direction, ['asc', 'desc'])) {
             $query->orderBy($sortBy, $direction);
         }
 

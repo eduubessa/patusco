@@ -2,17 +2,15 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use App\Models\Appointment;
+use App\Policies\AppointmentPolicy;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends AuthServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
+    protected $policies = [
+        Appointment::class => AppointmentPolicy::class,
+    ];
 
     /**
      * Bootstrap any application services.
@@ -20,5 +18,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+        $this->registerPolicies();
     }
 }

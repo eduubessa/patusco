@@ -12,16 +12,16 @@ class DeleteAppointmentController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request, string $id): void
-    {
+    public function __invoke(
+        Request $request,
+        string $id
+    ): void {
         //
         $appointment = Appointment::with('animal')->findOrFail($id);
 
-        dd($appointment);
-
-        $user_id = match(auth()->user()->role) {
+        $user_id = match (auth()->user()->role) {
             UserRoles::Customer->value => auth()->user()->id,
-            UserRoles::Receptionist->value => ""
+            UserRoles::Receptionist->value => ''
         };
     }
 }

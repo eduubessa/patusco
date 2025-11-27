@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Animal extends Model
@@ -19,22 +18,22 @@ class Animal extends Model
     use HasFactory, HasUuids, SoftDeletes;
 
     protected $fillable = [
-        'name', 'species', 'breed', 'doctor_id'
+        'name', 'species', 'breed', 'doctor_id',
     ];
 
     protected $casts = [
         'name' => 'string',
         'species' => 'string',
         'breed' => 'string',
-        'doctor_id' => 'string'
+        'doctor_id' => 'string',
     ];
 
     protected $appends = [
-        "registration_id"
+        'registration_id',
     ];
 
     protected $with = [
-        'doctor'
+        'doctor',
     ];
 
     protected function registrationId(): Attribute
@@ -65,21 +64,21 @@ class Animal extends Model
 
         $rawId = implode('', $chars); // Ex: A53A0
 
-        return "{$prefix}-" . strtoupper($rawId); // Ex: V-A53A0
+        return "{$prefix}-".strtoupper($rawId); // Ex: V-A53A0
     }
 
     public function owners(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, "animal_user", "animal_id", "owner_id");
-    }
-
-    public function doctor(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'doctor_id', 'id');
+        return $this->belongsToMany(User::class, 'animal_user', 'animal_id', 'owner_id');
     }
 
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class, 'animal_id', 'id');
+    }
+
+    public function doctor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'doctor_id', 'id');
     }
 }

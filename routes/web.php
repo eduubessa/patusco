@@ -25,15 +25,14 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-
 Route::prefix('appointments')->middleware(['auth', 'verified'])->name('appointments')->group(function () {
     Route::get('/', ListAppointmentsController::class)->name('.list');
     Route::get('/new', CreateAppointmentController::class)->name('.create');
     Route::post('/', StoreAppointmentController::class)->name('.store');
-    Route::get('/{id}', ShowAppointmentController::class)->name('.show');
-    Route::get('/{id}/edit', EditAppointmentController::class)->name('.edit');
-    Route::put('/{id}', UpdateAppointmentController::class)->name('.update');
-    Route::delete('/{id}', DeleteAppointmentController::class)->name('.destroy');
+    Route::get('/{appointment}', ShowAppointmentController::class)->name('.show');
+    Route::get('/{appointment}/edit', EditAppointmentController::class)->name('.edit');
+    Route::put('/{appointment}', UpdateAppointmentController::class)->name('.update');
+    Route::delete('/{appointment}', DeleteAppointmentController::class)->name('.destroy');
 });
 
 Route::prefix('customers')->middleware(['auth', 'verified'])->name('customers')->group(function () {

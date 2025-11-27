@@ -2,20 +2,17 @@
 
 namespace App\Http\Requests;
 
-use App\Helpers\Enums\UserRoles;
-use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreAppointmentRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-      return auth()->check() && $this->user()->hasAnyRole(['customer', 'receptionist', 'doctor']);
+        return auth()->check() && $this->user()->hasAnyRole(['admin', 'customer', 'receptionist']);
     }
 
     /**
@@ -27,9 +24,12 @@ class StoreAppointmentRequest extends FormRequest
     {
         return [
             //
-            'animal_id' => 'required|string|exists:animals,id',
+            'customer' => 'required|exists:users,id',
+            'doctor' => 'required|exists:users,id',
+            'animal' => 'required|string|exists:animals,id',
             'situation' => 'required|string|min:5|max:200',
-            'schedule_at' => 'required|date'
+            'scheduled_at' => 'required|date',
+            'status' => 'required|string',
         ];
     }
 }

@@ -16,7 +16,7 @@ class ShowAnimalController extends Controller
     {
         //
         $animal = Animal::with(['doctor', 'owners', 'appointments.doctor', 'appointments' => function ($query) {
-                $query->latest()->take(5);
+            $query->latest()->take(5);
         }])->findOrFail($id);
 
         return Inertia::render('Animal/Show', [

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Animal;
 
 use App\Actions\Animal\ListAnimals;
 use App\Http\Controllers\Controller;
-use App\Models\Animal;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 

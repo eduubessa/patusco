@@ -4,12 +4,15 @@ namespace App\Actions\Appointment;
 
 use App\Models\Appointment;
 use App\Models\User;
-use Illuminate\Auth\Access\Gate;
-use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ListAppointments
 {
-    public function handle(User $user, ?string $sortBy, ?string $sortDirection, int $paginate = 7): Collection
+    public function handle(
+        User $user,
+        ?string $sortBy,
+        ?string $sortDirection,
+        int $paginate = 7): LengthAwarePaginator
     {
         return Appointment::forUser($user)
             ->sortByColumn($sortBy, $sortDirection)

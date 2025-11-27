@@ -22,7 +22,7 @@ class AnimalFactory extends Factory
             'birthday' => $this->faker->date(),
             'species' => $this->faker->word(),
             'breed' => $this->faker->word(),
-            'sex' => 'm'
+            'sex' => 'm',
         ];
     }
 }

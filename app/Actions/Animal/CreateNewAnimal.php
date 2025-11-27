@@ -4,8 +4,5 @@ namespace App\Actions\Animal;
 
 class CreateNewAnimal
 {
-    public function create(array $input)
-    {
-
-    }
+    public function create(array $input) {}
 }

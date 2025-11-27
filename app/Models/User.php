@@ -3,19 +3,20 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -56,16 +57,10 @@ class User extends Authenticatable
         ];
     }
 
-    public function animals(): HasMany
-    {
-        return $this->hasMany(Animal::class, 'doctor_id', 'id');
-    }
-
     /**
      * Verifica se o utilizador tem o determinado papel
      *
-     * @param string $role O papel a verificar  (ex: Customer, doctor, ou receptionist)
-     * @return bool
+     * @param  string  $role  O papel a verificar  (ex: Customer, doctor, ou receptionist)
      */
     public function hasRole(string $role): bool
     {
@@ -75,31 +70,30 @@ class User extends Authenticatable
     /**
      * Verifica se o utilizador tem PELO MENOS UM dos PAPEIS fornecidos
      *
-     * @param array $roles Um array de papéis a verificar (ex: ['Customer', 'Doctor', 'Receptionist'])
-     * @return bool
+     * @param  array  $roles  Um array de papéis a verificar (ex: ['Customer', 'Doctor', 'Receptionist'])
      */
     public function hasAnyRole(array $roles): bool
     {
         return in_array($this->role, $roles);
     }
 
-    public function scopeCustomer($query)
+    public function authoredAppointments(): HasMany
     {
-        return $query->where('role', 'customer');
+        return $this->hasMany(Appointment::class, 'authored_id');
     }
 
-    public function scopeDoctor($query)
+    public function appointments(): HasMany
     {
-        return $query->where('role', 'doctor');
+        return $this->hasMany(Appointment::class, 'customer_id');
     }
 
-    public function scopeAdmin($query)
+    public function doctorAppointments(): HasMany
     {
-        return $query->where('role', 'admin');
+        return $this->hasMany(Appointment::class, 'doctor_id');
     }
 
-    public function scopeReceptionist($query)
+    public function animals(): BelongsToMany
     {
-        return $query->where('role', 'receptionist');
+        return $this->belongsToMany(Animal::class, 'appointments');
     }
 }

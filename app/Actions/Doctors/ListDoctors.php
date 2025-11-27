@@ -9,7 +9,7 @@ class ListDoctors
     /**
      * Create a new class instance.
      */
-    public function handle(string $sortBy = "updated_at", string $direction = "desc", int $perPage = 20)
+    public function handle(string $sortBy = 'updated_at', string $direction = 'desc', int $perPage = 20)
     {
         //
         $columns = ['id', 'name', 'username', 'email', 'created_at', 'updated_at'];
@@ -17,7 +17,7 @@ class ListDoctors
         $query = User::select($columns)->Doctor();
         $direction = in_array($direction, ['asc', 'desc']) ? $direction : 'desc';
 
-        if($sortBy && in_array($sortBy, $columns) && $direction && in_array($direction, ['asc', 'desc'])) {
+        if ($sortBy && in_array($sortBy, $columns) && $direction && in_array($direction, ['asc', 'desc'])) {
             $query->orderBy($sortBy, $direction);
         }
 
