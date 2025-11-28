@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Helpers\Enums\UserRoles;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateAppointmentRequest extends FormRequest
@@ -11,7 +12,10 @@ class UpdateAppointmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check() &&
+            (
+                auth()->user()->role === UserRoles::Admin->value || auth()->user()->role === UserRoles::Receptionist->value || auth()->user()->role === UserRoles::Doctor->value
+            );
     }
 
     /**
@@ -23,6 +27,10 @@ class UpdateAppointmentRequest extends FormRequest
     {
         return [
             //
+            'doctor' => 'string|exists:users,id',
+            'situation' => 'required|string',
+            'scheduled_at' => 'required|date',
+            'status' => 'required|string',
         ];
     }
 }

@@ -29,34 +29,36 @@ Route::prefix('appointments')->middleware(['auth', 'verified'])->name('appointme
     Route::get('/', ListAppointmentsController::class)->name('.list');
     Route::get('/new', CreateAppointmentController::class)->name('.create');
     Route::post('/', StoreAppointmentController::class)->name('.store');
-    Route::get('/{appointment}', ShowAppointmentController::class)->name('.show');
-    Route::get('/{appointment}/edit', EditAppointmentController::class)->name('.edit');
-    Route::put('/{appointment}', UpdateAppointmentController::class)->name('.update');
-    Route::delete('/{appointment}', DeleteAppointmentController::class)->name('.destroy');
+    Route::get('/{appointment:slug}/edit', EditAppointmentController::class)->name('.edit');
+    Route::get('/{appointment:slug}', ShowAppointmentController::class)->name('.show');
+    Route::put('/{appointment:slug}', UpdateAppointmentController::class)->name('.update');
+    Route::delete('/{appointment:slug}', DeleteAppointmentController::class)->name('.destroy');
 });
 
 Route::prefix('customers')->middleware(['auth', 'verified'])->name('customers')->group(function () {
     Route::get('/', ListCustomersController::class)->name('.list');
     Route::get('/new', [CreateAppointmentController::class, 'create'])->name('.create');
     Route::post('/', CreateAppointmentController::class)->name('.store');
-    Route::get('/{id}', ShowAppointmentController::class)->name('.index');
-    Route::get('/{id}/edit', ListAppointmentsController::class)->name('.edit');
+    Route::get('/{customer}', ShowAppointmentController::class)->name('.index');
+    Route::get('/{customer}/edit', ListAppointmentsController::class)->name('.edit');
+    Route::put('/{customer}', UpdateAppointmentController::class)->name('.update');
+    Route::delete('/{customer}', DeleteAppointmentController::class)->name('.destroy');
 });
 
 Route::prefix('animals')->middleware(['auth', 'verified'])->name('animals')->group(function () {
     Route::get('/', ListAnimalController::class)->name('.list');
     Route::get('/new', [CreateAppointmentController::class, 'create'])->name('.create');
     Route::post('/', CreateAppointmentController::class)->name('.store');
-    Route::get('/{id}', ShowAnimalController::class)->name('.index');
-    Route::get('/{id}/edit', ListAppointmentsController::class)->name('.edit');
+    Route::get('/{animal}', ShowAnimalController::class)->name('.index');
+    Route::get('/{animal}/edit', ListAppointmentsController::class)->name('.edit');
 });
 
 Route::prefix('doctors')->middleware(['auth', 'verified'])->name('doctors')->group(function () {
     Route::get('/', ListDoctorController::class)->name('.list');
     Route::get('/new', [CreateAppointmentController::class, 'create'])->name('.create');
     Route::post('/', CreateAppointmentController::class)->name('.store');
-    Route::get('/{id}', ShowAppointmentController::class)->name('.index');
-    Route::get('/{id}/edit', ListAppointmentsController::class)->name('.edit');
+    Route::get('/{doctor}', ShowAppointmentController::class)->name('.index');
+    Route::get('/{doctor}/edit', ListAppointmentsController::class)->name('.edit');
 });
 
 Route::get('/debug-auth', function () {

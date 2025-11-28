@@ -43,7 +43,11 @@ class AppointmentPolicy
      */
     public function update(User $user, Appointment $appointment): bool
     {
-        return in_array($user->role, self::FULL_ACCESS, true);
+        return match($user->role) {
+            UserRoles::Admin->value, UserRoles::Receptionist->value, => true,
+            UserRoles::Doctor->value => $appointment->doctor_id === $user->id,
+            default => false
+        };
     }
 
     /**

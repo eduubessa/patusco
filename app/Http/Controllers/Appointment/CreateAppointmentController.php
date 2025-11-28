@@ -11,17 +11,10 @@ use Inertia\Inertia;
 class CreateAppointmentController extends Controller
 {
     use AuthorizesRequests;
-
-    //
     public function __invoke()
     {
         $this->authorize('create', Appointment::class);
 
-        return Inertia::render('Appointment/Create');
-    }
-
-    public function create(Request $request)
-    {
         return Inertia::render('Appointment/Create');
     }
 }
