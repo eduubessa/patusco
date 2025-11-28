@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Helpers\Enums\AppointmentStatus;
 use App\Helpers\Enums\UserRoles;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateAppointmentRequest extends FormRequest
@@ -27,10 +29,26 @@ class UpdateAppointmentRequest extends FormRequest
     {
         return [
             //
-            'doctor' => 'string|exists:users,id',
-            'situation' => 'required|string',
-            'scheduled_at' => 'required|date',
-            'status' => 'required|string',
+            'doctor' => [
+                'required',
+                'string',
+                Rule::exists('users', 'id')->where(function ($query) {
+                    $query->where('role', UserRoles::Doctor->value)
+                        ->whereNotNull('email_verified_at')
+                        ->whereNull('deleted_at');
+                }),
+            ],
+            'situation' => [
+                'required',
+                'string',
+                'min:10',
+                'max:150'
+            ],
+            'scheduled_at' => [
+                'required',
+                'date',
+                'after:today'
+            ]
         ];
     }
 }

@@ -102,6 +102,31 @@ test('admin can update appointment', function () {
     ]);
 });
 
+test('admin cannot update an appointment with invalid data', function () {
+    $user = User::factory()->verified()->create(['role' =>  UserRoles::Admin->value]);
+
+    $appointment = Appointment::factory()->create([
+        'author_id' => $user->id
+    ]);
+
+    actingAs($user)
+        ->put("/appointments/{$appointment->slug}", [
+            'situation' => null,
+            'scheduled_at' => 'invalid-date',
+            'status' => 'invalid-status'
+        ])
+        ->assertStatus(302)
+        ->assertRedirectBack()
+        ->assertSessionHasErrors(['situation', 'scheduled_at', 'status']);
+
+    $this->assertDatabaseHas('appointments', [
+        'id' => $appointment->id,
+        'situation' => $appointment->situation,
+        'scheduled_at' => $appointment->scheduled_at,
+        'status' => $appointment->status
+    ]);
+});
+
 test('receptionist can update appointment', function () {
     $user = User::factory()->verified()->create(['role' =>  UserRoles::Receptionist->value]);
     $doctor = User::factory()->verified()->create(['role' =>  UserRoles::Doctor->value]);
