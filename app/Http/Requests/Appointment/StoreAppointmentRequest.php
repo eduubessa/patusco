@@ -1,23 +1,21 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Appointment;
 
 use App\Helpers\Enums\AppointmentStatus;
 use App\Helpers\Enums\UserRoles;
-use Illuminate\Validation\Rule;
+use App\Rules\MaxAppointmentsPerDoctorPerSlot;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdateAppointmentRequest extends FormRequest
+class StoreAppointmentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return auth()->check() &&
-            (
-                auth()->user()->role === UserRoles::Admin->value || auth()->user()->role === UserRoles::Receptionist->value || auth()->user()->role === UserRoles::Doctor->value
-            );
+        return auth()->check() && $this->user()->hasAnyRole(['admin', 'customer', 'receptionist']);
     }
 
     /**
@@ -29,6 +27,15 @@ class UpdateAppointmentRequest extends FormRequest
     {
         return [
             //
+            'customer' => [
+                'required',
+                'string',
+                Rule::exists('users', 'id')->where(function ($query) {
+                    $query->where('role', UserRoles::Customer->value)
+                        ->whereNotNull('email_verified_at')
+                        ->whereNull('deleted_at');
+                }),
+            ],
             'doctor' => [
                 'required',
                 'string',
@@ -36,6 +43,14 @@ class UpdateAppointmentRequest extends FormRequest
                     $query->where('role', UserRoles::Doctor->value)
                         ->whereNotNull('email_verified_at')
                         ->whereNull('deleted_at');
+                }),
+                new MaxAppointmentsPerDoctorPerSlot(3, $this->scheduled_at)
+            ],
+            'animal' => [
+                'required',
+                'string',
+                Rule::exists('animals', 'id')->where(function ($query) {
+                    $query->whereNull('deleted_at');
                 }),
             ],
             'situation' => [
@@ -47,7 +62,13 @@ class UpdateAppointmentRequest extends FormRequest
             'scheduled_at' => [
                 'required',
                 'date',
+                'date_format:Y-m-d H:i:s',
                 'after:today'
+            ],
+            'status' => [
+                'required',
+                'string',
+                Rule::in(array_column(AppointmentStatus::cases(), 'value'))
             ]
         ];
     }

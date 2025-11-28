@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Animal;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateAnimalRequest extends FormRequest
+class StoreAnimalRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

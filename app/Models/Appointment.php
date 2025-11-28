@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Helpers\Enums\AppointmentStatus;
 use App\Helpers\Enums\UserRoles;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +21,14 @@ class Appointment extends Model
     ];
 
     protected $fillable = [
-        'author_id', 'customer_id', 'animal_id', 'doctor_id', 'situation', 'schedule_at', 'status', 'slug',
+        'author_id',
+        'customer_id',
+        'animal_id',
+        'doctor_id',
+        'situation',
+        'schedule_at',
+        'status',
+        'slug',
         'scheduled_at',
     ];
 
@@ -49,6 +58,11 @@ class Appointment extends Model
         return $query->orderBy($column, $direction);
     }
 
+    /**
+     * @param $query
+     * @param User $user
+     * @return \LaravelIdea\Helper\App\Models\_IH_Appointment_QB
+     */
     public function scopeForUser($query, User $user)
     {
         return match ($user->role) {
@@ -57,6 +71,19 @@ class Appointment extends Model
             UserRoles::Customer->value => $query->where('customer_id', $user->id),
             default => $query->whereRaw('1 = 0')
         };
+    }
+
+    /**
+     * @param $query
+     * @param string $doctor_id
+     * @param Carbon $scheduledAt
+     * @return mixed
+     */
+    public function scopeScheduledForDoctor($query, string $doctor_id, Carbon $scheduledAt): mixed
+    {
+        return $query->where('doctor_id', $doctor_id)
+                ->where('scheduled_at', $scheduledAt)
+                ->where('status', AppointmentStatus::Scheduled);
     }
 
     public function author(): BelongsTo

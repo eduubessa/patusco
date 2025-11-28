@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\Enums\AppointmentStatus;
+use App\Helpers\Enums\UserRoles;
 use App\Models\Animal;
 use App\Models\Appointment;
 use App\Models\User;
@@ -175,4 +176,30 @@ test('cannot create appointment with invalid data', function () {
             'doctor',
             'animal',
         ]);
+});
+
+test('store fails when doctor reaches max appointments per slot', function () {
+    $customer = User::factory()->verified()->create(['role' => 'customer']);
+    $doctor = User::factory()->verified()->create(['role' => 'doctor']);
+    $animal = Animal::factory()->create();
+
+    $slot = now()->addDay()->format('Y-m-d H:i:s');
+
+    Appointment::factory()->count(5)->create([
+        'doctor_id' => $doctor->id,
+        'scheduled_at' => $slot,
+        'status' => AppointmentStatus::Scheduled->value
+    ]);
+
+    actingAs($customer)
+        ->post('/appointments/', [
+            'customer' => $customer->id,
+            'doctor' => $doctor->id,
+            'animal' => $animal->id,
+            'situation' => "Initial situation from test!",
+            'scheduled_at' => $slot,
+            'status' => AppointmentStatus::Scheduled->value
+        ])
+        ->assertStatus(302)
+        ->assertSessionHasErrors('doctor', "O veternário selecionado já não tem disponibilidade para essa hora!");
 });

@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use App\Helpers\Enums\AppointmentStatus;
 use App\Models\Appointment;
+use Carbon\Carbon;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -28,10 +29,7 @@ class MaxAppointmentsPerDoctorPerSlot implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         //
-        $appointmentCount = Appointment::where('doctor_id', $value)
-            ->where('scheduled_at', $this->scheduledAt)
-            ->whereIn('status', [AppointmentStatus::Scheduled])
-            ->count();
+        $appointmentCount = Appointment::scheduledForDoctor($value, Carbon::parse($this->scheduledAt))->count();
 
         if($appointmentCount >= $this->maxAppointmentsPerDoctor) {
             $fail("O veternário selecionado já não tem disponibilidade para essa hora!");

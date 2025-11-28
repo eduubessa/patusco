@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Appointment;
 
 use App\Actions\Appointment\CreateNewAppointment;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreAppointmentRequest;
+use App\Http\Requests\Appointment\StoreAppointmentRequest;
 use App\Models\Appointment;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 
 class StoreAppointmentController extends Controller
 {
