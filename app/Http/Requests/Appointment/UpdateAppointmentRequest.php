@@ -18,7 +18,9 @@ class UpdateAppointmentRequest extends FormRequest
     {
         return auth()->check() &&
             (
-                auth()->user()->role === UserRoles::Admin->value || auth()->user()->role === UserRoles::Receptionist->value || auth()->user()->role === UserRoles::Doctor->value
+                auth()->user()->role === UserRoles::Admin->value ||
+                auth()->user()->role === UserRoles::Receptionist->value ||
+                auth()->user()->role === UserRoles::Doctor->value
             );
     }
 
@@ -31,7 +33,15 @@ class UpdateAppointmentRequest extends FormRequest
     {
         return [
             //
-            'doctor' => $this->canChangeDoctor($this->user),
+            'doctor' => $this->user()->role === UserRoles::Doctor->value
+                ?   ['prohibited']
+                :   'required',
+                    'uuid',
+                    Rule::exists('users', 'id')->where(fn ($q) => $q
+                        ->where('role', UserRoles::Doctor->value)
+                        ->whereNotNUll('email_verified_at')
+                        ->whereNull('deleted_at')
+                    ),
             'situation' => [
                 'required',
                 'string',
@@ -50,21 +60,10 @@ class UpdateAppointmentRequest extends FormRequest
         ];
     }
 
-    private function canChangeDoctor(User $user): array
+    protected function prepareForValidation()
     {
-        if(in_array($user->role, [UserRoles::Admin->value, UserRoles::Receptionist->value])){
-            return [
-                'required',
-                'string',
-                Rule::exists('users', 'id')->where(function ($query) {
-                    $query->where('role', UserRoles::Doctor->value)
-                        ->whereNotNull('email_verified_at')
-                        ->whereNull('deleted_at');
-                }),
-                new MaxAppointmentsPerDoctorPerSlot(3, $this->scheduled_at),
-            ];
+        if($this->user()->role === UserRoles::Doctor->value){
+            $this->request->remove('doctor');
         }
-
-        return ['prohibited'];
     }
 }

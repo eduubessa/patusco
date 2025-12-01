@@ -44,7 +44,8 @@ class AppointmentPolicy
     public function update(User $user, Appointment $appointment): bool
     {
         return match($user->role) {
-            UserRoles::Admin->value, UserRoles::Receptionist->value, => true,
+            UserRoles::Admin->value, => true,
+            UserRoles::Receptionist->value => true,
             UserRoles::Doctor->value => $appointment->doctor_id === $user->id,
             default => false
         };

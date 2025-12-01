@@ -40,7 +40,8 @@ test('the doctor can access the appointment update screen only if the appointmen
 
 test('the doctor cannot access the appointment update screen if the appointment does not belong to them', function () {
     $user = User::factory()->verified()->create(['role' =>  UserRoles::Doctor->value]);
-    $appointment = Appointment::factory()->create();
+    $doctorAssigned = User::factory()->verified()->create(['role' =>  UserRoles::Doctor->value]);
+    $appointment = Appointment::factory()->create(['doctor_id' => $doctorAssigned]);
 
     actingAs($user)
         ->get("/appointments/{$appointment->slug}/edit")
@@ -234,7 +235,6 @@ test('doctor can update only their assigned appointments', function () {
 
     actingAs($user)
         ->put("/appointments/{$appointment->slug}", [
-            'doctor' => $user->id,
             'situation' => "Updated situation from test by doctor",
             'scheduled_at' => $scheduledAt,
             'status' => AppointmentStatus::Scheduled->value

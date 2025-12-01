@@ -8,12 +8,17 @@ class UpdateAppointment
 {
     public function update(Appointment $appointment, array $data): Appointment
     {
-        $appointment->update([
-            'doctor_id' => $data['doctor'],
+        $update_data = [
             'situation' => $data['situation'],
             'scheduled_at' => $data['scheduled_at'],
             'status' => $data['status'],
-        ]);
+        ];
+
+        if(array_key_exists("doctor", $data)){
+            $update_data['doctor_id'] = $data['doctor'];
+        }
+
+        $appointment->update($update_data);
 
         return $appointment;
     }
