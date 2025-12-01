@@ -40,7 +40,7 @@ test('doctor sees only their own appointments', function () {
     $receptionist = User::factory()->verified()->create(['role' => 'receptionist']); // create a receptionist
     $animal = Animal::factory()->create(); // create a animal
 
-    $appointment = Appointment::factory()->create([
+    Appointment::factory()->create([
         'author_id' => $receptionist->id,
         'customer_id' => $customer->id,
         'animal_id' => $animal->id,
@@ -67,7 +67,7 @@ test('customer sees only their own appointments', function () {
     $receptionist = User::factory()->verified()->create(['role' => 'receptionist']); // create a receptionist
     $animal = Animal::factory()->create(); // create a animal
 
-    $appointment = Appointment::factory()->create([
+    Appointment::factory()->create([
         'author_id' => $receptionist->id,
         'customer_id' => $customer->id,
         'animal_id' => $animal->id,
@@ -93,9 +93,9 @@ test('doctor does not see appointments of other doctors', function () {
     $customer = User::factory()->verified()->create(['role' => 'customer']); // create a customer (patient)
     $animal = Animal::factory()->create(); // create a animal
 
-    $doctors = User::factory()->verified()->count(5)->create(['role' => 'doctor']);
+    User::factory()->verified()->count(5)->create(['role' => 'doctor']);
 
-    $appointment = Appointment::factory()->create([
+    Appointment::factory()->create([
         'author_id' => $customer->id,
         'doctor_id' => $doctor->id,
         'customer_id' => $customer->id,
@@ -103,7 +103,7 @@ test('doctor does not see appointments of other doctors', function () {
     ]);
 
     // Appointment without doctor logged
-    $appointments = Appointment::factory()->count(5)->create();
+    Appointment::factory()->count(5)->create();
 
     actingAs($doctor)
         ->get('/appointments')

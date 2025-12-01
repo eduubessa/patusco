@@ -257,7 +257,7 @@ test('doctor cannot update appointments not assigned to them.', function () {
     $doctorNotAssigned = User::factory()->verified()->create(['role' => UserRoles::Doctor->value]);
 
     $appointment = Appointment::factory()->create([
-        'doctor_id' => $doctorAssigned,
+        'doctor_id' => $doctorAssigned->id,
         'situation' => "Updated situation from test by doctor",
         'scheduled_at' => now()->addDays(2)->format('Y-m-d H:i:s'),
         'status' => AppointmentStatus::Scheduled->value
@@ -265,14 +265,13 @@ test('doctor cannot update appointments not assigned to them.', function () {
 
     actingAs($doctorNotAssigned)
         ->put("/appointments/{$appointment->slug}", [
-            'doctor' => $doctorAssigned,
+            'doctor' => $doctorAssigned->id,
             'situation' => 'Attempted update from test by doctor',
             'scheduled_at' => now()->addDays(2)->format('Y-m-d H:i:s'),
             'status' => AppointmentStatus::Scheduled->value,
         ])
-        ->assertStatus(302)
-        ->assertRedirectBack()
-        ->assertSessionHasErrors(['doctor', 'scheduled_at', 'status']);
+        ->assertStatus(403)
+        ->assertForbidden();
 
     $this->assertDatabaseMissing('appointments', [
         'situation' => 'Attempted update',

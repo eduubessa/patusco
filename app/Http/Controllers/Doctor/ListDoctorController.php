@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Doctors;
+namespace App\Http\Controllers\Doctor;
 
 use App\Actions\Doctors\ListDoctors;
 use App\Http\Controllers\Controller;

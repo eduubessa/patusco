@@ -4,6 +4,7 @@ namespace App\Http\Requests\Appointment;
 
 use App\Helpers\Enums\AppointmentStatus;
 use App\Helpers\Enums\UserRoles;
+use App\Models\User;
 use App\Rules\MaxAppointmentsPerDoctorPerSlot;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -30,16 +31,7 @@ class UpdateAppointmentRequest extends FormRequest
     {
         return [
             //
-            'doctor' => [
-                'required',
-                'string',
-                Rule::exists('users', 'id')->where(function ($query) {
-                    $query->where('role', UserRoles::Doctor->value)
-                        ->whereNotNull('email_verified_at')
-                        ->whereNull('deleted_at');
-                }),
-                new MaxAppointmentsPerDoctorPerSlot(3, $this->scheduled_at),
-            ],
+            'doctor' => $this->canChangeDoctor($this->user),
             'situation' => [
                 'required',
                 'string',
@@ -56,5 +48,23 @@ class UpdateAppointmentRequest extends FormRequest
                 Rule::in(array_column(AppointmentStatus::cases(), 'value'))
             ]
         ];
+    }
+
+    private function canChangeDoctor(User $user): array
+    {
+        if(in_array($user->role, [UserRoles::Admin->value, UserRoles::Receptionist->value])){
+            return [
+                'required',
+                'string',
+                Rule::exists('users', 'id')->where(function ($query) {
+                    $query->where('role', UserRoles::Doctor->value)
+                        ->whereNotNull('email_verified_at')
+                        ->whereNull('deleted_at');
+                }),
+                new MaxAppointmentsPerDoctorPerSlot(3, $this->scheduled_at),
+            ];
+        }
+
+        return ['prohibited'];
     }
 }

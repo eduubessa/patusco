@@ -9,7 +9,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class ListAppointmentsController extends Controller
+class ListAppointmentController extends Controller
 {
     //
     use AuthorizesRequests;

@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class ListCustomersController extends Controller
+class ListCustomerController extends Controller
 {
     //
     public function __invoke(Request $request, ListCustomers $listCustomers)
