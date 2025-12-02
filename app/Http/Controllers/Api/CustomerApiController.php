@@ -13,7 +13,7 @@ class CustomerApiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): JsonResource
+    public function index(Request $request)
     {
         //
         $searchTerm = $request->query('search');

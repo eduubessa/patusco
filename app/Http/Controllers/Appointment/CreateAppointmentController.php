@@ -18,7 +18,6 @@ class CreateAppointmentController extends Controller
 
         $customers = User::Customer()->get();
 
-
         return Inertia::render('Appointment/Create', [
             'customers_data' => [],
             'breadcrumbs' => [

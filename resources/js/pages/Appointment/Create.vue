@@ -15,18 +15,13 @@ const props = defineProps<Props>();
 
 // 🔍 Texto digitado no autocomplete
 const searchCustomers = ref("");
-
-// 📌 Cliente selecionado
 const selectedCustomers = ref<Customer | null>(null);
-
-// 🆕 Lista vinda da API
 const remoteCustomers = ref<Customer[]>([]);
 const loading = ref(false);
 
 // ⏳ Debounce timer
 let debounceTimer: number | null = null;
 
-// 🔎 Função para buscar clientes da API
 const fetchCustomers = async (query: string) => {
     loading.value = true;
 
@@ -34,7 +29,6 @@ const fetchCustomers = async (query: string) => {
         const response = await fetch(`/api/customers?search=${encodeURIComponent(query)}`);
         const json = await response.json();
 
-        // Laravel API Resource retorna { data: [...] }
         remoteCustomers.value = json.data;
     } catch (error) {
         console.error("Erro ao buscar clientes:", error);
@@ -43,16 +37,13 @@ const fetchCustomers = async (query: string) => {
     }
 };
 
-// 🔁 Watcher com debounce de 300ms
 watch(searchCustomers, (value) => {
     if (debounceTimer) clearTimeout(debounceTimer);
-
     debounceTimer = window.setTimeout(() => {
         fetchCustomers(value);
     }, 300);
 });
 
-// ➕ Evento para criar um cliente novo
 const addCustomerButtonClickHandler = () => {
     router.visit(customers.create().url);
 };
@@ -72,6 +63,8 @@ const addCustomerButtonClickHandler = () => {
                     v-model="selectedCustomers"
                     :items="remoteCustomers"
                     :search="searchCustomers"
+                    item-title="name"
+                    item-value="username"
                     label="Cliente"
                     placeholder="Pesquisar cliente..."
                     clearable
