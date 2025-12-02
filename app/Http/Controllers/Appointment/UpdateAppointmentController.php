@@ -20,9 +20,18 @@ class UpdateAppointmentController extends Controller
         //
         $this->authorize('update', $appointment);
 
-        $action->update($appointment, $request->validated());
+        try {
+            $action->update($appointment, $request->validated());
 
-        return redirect()->route('appointments.show', $appointment->slug)
-            ->with('success', "O agendamento foi atualizado com sucesso.");
+            return redirect()
+                ->route('appointments.show', $appointment->slug)
+                ->with('success', 'O agendamento foi atualizado com sucesso.');
+
+        }catch(\Throwable $e){
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Update appointment failed.');
+        }
     }
 }

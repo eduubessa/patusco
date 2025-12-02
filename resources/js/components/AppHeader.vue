@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { router } from '@inertiajs/vue3';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -21,8 +22,11 @@ import { toUrl, urlIsActive } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import { InertiaLinkProps, Link, usePage } from '@inertiajs/vue3';
-import { ChevronLeft, LayoutGrid, Menu, Search } from 'lucide-vue-next';
+import { LayoutGrid, Menu } from 'lucide-vue-next';
 import { computed } from 'vue';
+import appointments from '@/routes/appointments';
+import animals from '@/routes/animals';
+import doctors from '@/routes/doctors';
 
 interface Props {
     breadcrumbs?: BreadcrumbItem[];
@@ -59,15 +63,9 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-const canGoBack = computed(() => {
-    return window.history.length > 1;
-});
-
-const handleClickGoBack = () => {
-    if (canGoBack.value) {
-        window.history.back();
-    }
-};
+const addButtonClickHandler = (url: string) => {
+    router.visit(url);
+}
 </script>
 
 <template>
@@ -118,23 +116,6 @@ const handleClickGoBack = () => {
                         </SheetContent>
                     </Sheet>
                 </div>
-
-                <!-- Desktop Menu -->
-                <div class="hidden h-full lg:flex lg:flex-0">
-                    <div class="relative flex items-center">
-                        <v-btn
-                            stacked
-                            density="compact"
-                            class="v-btn-circle mr-2"
-                            :ripple="false"
-                            @click="handleClickGoBack"
-                            :disabled="canGoBack"
-                        >
-                            <ChevronLeft />
-                        </v-btn>
-                    </div>
-                </div>
-
                 <div class="ml-auto flex items-center space-x-2">
                     <div class="relative flex items-center space-x-1">
                         <Button
@@ -142,9 +123,6 @@ const handleClickGoBack = () => {
                             size="icon"
                             class="group h-9 w-9 cursor-pointer"
                         >
-                            <Search
-                                class="size-5 opacity-80 group-hover:opacity-100"
-                            />
                         </Button>
                     </div>
 
@@ -195,7 +173,30 @@ const handleClickGoBack = () => {
                 <p class="text-bold text-gray-400">{{ description }}</p>
             </div>
             <div>
-                <v-btn> Adicionar </v-btn>
+                <v-menu offset-y>
+                    <template #activator="{ props }">
+                        <v-btn
+                            v-bind="props"
+                            color=""
+                            dark
+                        >
+                            Adicionar
+                            <v-icon right>mdi-menu-down</v-icon>
+                        </v-btn>
+                    </template>
+
+                    <v-list>
+                        <v-list-item @click.prevent.stop="addButtonClickHandler(appointments.create().url)">
+                            <v-list-item-title>Adicionar marcação</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click.prevent.stop="addButtonClickHandler(animals.create().url)">
+                            <v-list-item-title>Adicionar animal</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click.prevent.stop="addButtonClickHandler(doctors.create().url)">
+                            <v-list-item-title>Adicionar médico</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
             </div>
         </div>
     </div>

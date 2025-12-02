@@ -12,15 +12,17 @@ class ShowAnimalController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request, string $id)
+    public function __invoke(Request $request, Animal $animal)
     {
         //
-        $animal = Animal::with(['doctor', 'owners', 'appointments.doctor', 'appointments' => function ($query) {
-            $query->latest()->take(5);
-        }])->findOrFail($id);
+        $animal = $animal->load('doctor', 'owners', 'appointments', 'appointments.doctor');
 
         return Inertia::render('Animal/Show', [
             'animal' => $animal,
+            'breadcrumbs' => [
+                'title' => 'Animais',
+                'url' => route('animals.list')
+            ]
         ]);
     }
 }

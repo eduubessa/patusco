@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('birthday');
             $table->string('species');
             $table->string('breed')->nullable();
+            $table->string('slug')->unique();
             $table->timestamps();
             $table->softDeletes();
 

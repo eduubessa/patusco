@@ -43,49 +43,6 @@ class Appointment extends Model
         return 'slug';
     }
 
-    public function scopeSortByColumn($query, ?string $column = null, ?string $direction = null)
-    {
-        $allowedColumns = ['created_at', 'updated_at', 'status', 'doctor_id', 'customer_id'];
-
-        if (! $column || ! in_array($column, $allowedColumns, true)) {
-            $column = 'updated_at';
-        }
-
-        $direction = $direction ?? 'asc';
-        $direction = strtolower($direction);
-        $direction = $direction === 'desc' ? 'desc' : 'asc';
-
-        return $query->orderBy($column, $direction);
-    }
-
-    /**
-     * @param $query
-     * @param User $user
-     * @return \LaravelIdea\Helper\App\Models\_IH_Appointment_QB
-     */
-    public function scopeForUser($query, User $user)
-    {
-        return match ($user->role) {
-            UserRoles::Admin->value, UserRoles::Receptionist->value => $query,
-            UserRoles::Doctor->value => $query->where('doctor_id', $user->id),
-            UserRoles::Customer->value => $query->where('customer_id', $user->id),
-            default => $query->whereRaw('1 = 0')
-        };
-    }
-
-    /**
-     * @param $query
-     * @param string $doctor_id
-     * @param Carbon $scheduledAt
-     * @return mixed
-     */
-    public function scopeScheduledForDoctor($query, string $doctor_id, Carbon $scheduledAt): mixed
-    {
-        return $query->where('doctor_id', $doctor_id)
-                ->where('scheduled_at', $scheduledAt)
-                ->where('status', AppointmentStatus::Scheduled);
-    }
-
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id', 'id');
@@ -105,4 +62,61 @@ class Appointment extends Model
     {
         return $this->belongsTo(Animal::class, 'animal_id');
     }
+
+    ### Sorting ###
+
+    public function scopeSortByColumn($query, ?string $column = null, ?string $direction = null)
+    {
+        $allowedColumns = ['created_at', 'updated_at', 'status', 'doctor_id', 'customer_id'];
+
+        if (! $column || ! in_array($column, $allowedColumns, true)) {
+            $column = 'updated_at';
+        }
+
+        $direction = $direction ?? 'asc';
+        $direction = strtolower($direction);
+        $direction = $direction === 'desc' ? 'desc' : 'asc';
+
+        return $query->orderBy($column, $direction);
+    }
+
+    ### Filters ###
+    public function scopeForUser($query, User $user)
+    {
+        return match ($user->role) {
+            UserRoles::Admin->value, UserRoles::Receptionist->value => $query,
+            UserRoles::Doctor->value => $query->where('doctor_id', $user->id),
+            UserRoles::Customer->value => $query->where('customer_id', $user->id),
+            default => $query->whereRaw('1 = 0')
+        };
+    }
+
+    public function scopeScheduledForDoctor($query, string $doctor_id, Carbon $scheduledAt): mixed
+    {
+        return $query->where('doctor_id', $doctor_id)
+            ->where('scheduled_at', $scheduledAt)
+            ->where('status', AppointmentStatus::Scheduled);
+    }
+
+    public function scopeOfAnimalType($query, ?string $species)
+    {
+        if($species) return $query->whereHas('animal', fn ($q) => $q->where('species', $species));
+    }
+
+    public function scopeBetweenDates($query, ?string $start, ?string $end)
+    {
+        if($start && $end) return $query->whereBetween('scheduled_at', [
+            Carbon::parse($start)->startOfDay(),
+            Carbon::parse($end)->endOfDay(),
+        ]);
+    }
+
+    public function scopeAllSpecies($query)
+    {
+        return $query->join('animals', 'appointments.animal_id', '=', 'animals.id')
+            ->distinct()
+            ->orderBy('animals.species')
+            ->pluck('animals.species');
+    }
+
 }

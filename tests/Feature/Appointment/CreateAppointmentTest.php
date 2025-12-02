@@ -1,7 +1,6 @@
 <?php
 
 use App\Helpers\Enums\AppointmentStatus;
-use App\Helpers\Enums\UserRoles;
 use App\Models\Animal;
 use App\Models\Appointment;
 use App\Models\User;
@@ -188,7 +187,7 @@ test('store fails when doctor reaches max appointments per slot', function () {
     Appointment::factory()->count(5)->create([
         'doctor_id' => $doctor->id,
         'scheduled_at' => $slot,
-        'status' => AppointmentStatus::Scheduled->value
+        'status' => AppointmentStatus::Scheduled->value,
     ]);
 
     actingAs($customer)
@@ -196,10 +195,10 @@ test('store fails when doctor reaches max appointments per slot', function () {
             'customer' => $customer->id,
             'doctor' => $doctor->id,
             'animal' => $animal->id,
-            'situation' => "Initial situation from test!",
+            'situation' => 'Initial situation from test!',
             'scheduled_at' => $slot,
-            'status' => AppointmentStatus::Scheduled->value
+            'status' => AppointmentStatus::Scheduled->value,
         ])
         ->assertStatus(302)
-        ->assertSessionHasErrors('doctor', "O veternário selecionado já não tem disponibilidade para essa hora!");
+        ->assertSessionHasErrors('doctor', 'O veternário selecionado já não tem disponibilidade para essa hora!');
 });

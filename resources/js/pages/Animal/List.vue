@@ -9,8 +9,7 @@ import {
     calculateAge,
     formatDateTime,
     generateHashedColor,
-    getInitials,
-    riendlyIdFormatter,
+    getInitials
 } from '@/utils/formatters';
 import StatCard from '@/components/StatCard.vue';
 
@@ -52,15 +51,14 @@ const data = computed(() => {
     }));
 });
 
-const handleOpenCustomerDetailPage = (
-    event: Event,
-    { item }: { item: any },
-) => {
-    if (item.id) {
-        window.location.href = `/animals/${item.id}`;
-    }
+const handleOpenCustomerDetailPage = (event: Event, row: any) => {
+    const animal = row?.item;
+    if(!animal.slug) return;
 
+    console.log(animal.slug);
     debugger;
+
+    router.visit(animals.show(animal.slug).url);
 };
 
 const handlePageChange = (page: number) => {

@@ -18,11 +18,13 @@ class AnimalFactory extends Factory
     {
         return [
             //
+            'id' => $this->faker->unique()->uuid,
             'name' => $this->faker->name(),
             'birthday' => $this->faker->date(),
             'species' => $this->faker->word(),
             'breed' => $this->faker->word(),
-            'sex' => 'm',
+            'sex' => $this->faker->randomElement(['m', 'f']),
+            'slug' => $this->faker->unique()->slug,
         ];
     }
 }

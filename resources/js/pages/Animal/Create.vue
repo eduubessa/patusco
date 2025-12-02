@@ -1,6 +1,11 @@
 <script setup lang="ts">
+
 </script>
 
 <template>
-    sdjhgdjshagfajshdgfjhsadgf
+
 </template>
+
+<style scoped>
+
+</style>

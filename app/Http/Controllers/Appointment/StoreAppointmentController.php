@@ -23,15 +23,25 @@ class StoreAppointmentController extends Controller
         //
         $this->authorize('create', Appointment::class);
 
-        $appointment = $action->handle(
-            array_merge(
-                $request->validated(),
-                ['author' => auth()->user()->id]
-            )
-        );
+        try {
+            $appointment = $action->handle(
+                array_merge(
+                    $request->validated(),
+                    ['author' => auth()->user()->id]
+                )
+            );
 
-        return redirect()
-            ->route('appointments.show', $appointment->slug)
-            ->with('success', 'Consulta agendada com sucesso.');
+            return redirect()
+                ->route('appointments.show', $appointment)
+                ->with('success', 'Consulta agendada com sucesso.');
+
+        }catch (\Throwable $e){
+            \Log::error("Appointment store failed. Message: {$e->getMessage()}");
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Appointment store failed.');
+        }
     }
 }

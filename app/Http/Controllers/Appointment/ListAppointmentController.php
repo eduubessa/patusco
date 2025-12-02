@@ -23,12 +23,24 @@ class ListAppointmentController extends Controller
         $sortBy = $request->query('sort') ?? 'updated_at';
         $sortDirection = $request->query('direction') ?? 'desc';
 
-        $appointments = $action->handle(auth()->user(), $sortBy, $sortDirection);
+        $appointments = $action->handle(
+            auth()->user(),
+            $request->query('sort') ?? 'updated_at',
+            $request->query('direction') ?? 'desc',
+            10,
+            $request->query('animal_type'),
+            $request->query('start_date'),
+            $request->query('end_date'),
+        );
 
-        return Inertia::render('Appointment/Calendar', [
-            'events' => $appointments,
+        return Inertia::render('Appointment/List', [
+            'appointments_data' => $appointments,
             'sort_by' => $sortBy,
             'sort_direction' => $sortDirection,
+            'species' => Appointment::allSpecies(),
+            'breadcrumbs' => [
+                ['title' => 'Agendamentos', 'href' => route('appointments.list')],
+            ]
         ]);
     }
 }

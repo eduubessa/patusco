@@ -16,15 +16,15 @@ class Animal extends Model
 {
     /** @use HasFactory<AnimalFactory> */
     use HasFactory, HasUuids, SoftDeletes;
-
     protected $fillable = [
-        'name', 'species', 'breed', 'doctor_id',
+        'name', 'birthday', 'species', 'breed','slug', 'doctor_id',
     ];
 
     protected $casts = [
         'name' => 'string',
         'species' => 'string',
         'breed' => 'string',
+        'slug' => 'string',
         'doctor_id' => 'string',
     ];
 
@@ -36,6 +36,13 @@ class Animal extends Model
         'doctor',
     ];
 
+    protected $keyType = 'string';
+    public $incrementing = false;
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
     protected function registrationId(): Attribute
     {
         return Attribute::make(

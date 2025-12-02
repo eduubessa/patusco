@@ -69,7 +69,7 @@ const handlePageChange = (page: number) => {
 
     <AppLayout :breadcrumbs="breadcrumbs" :title="'Utentes'" :description="'Lista de utentes'">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto p-4"
         >
             <v-data-table-virtual
                 :headers="headers"

@@ -4,17 +4,26 @@ namespace App\Http\Controllers\Appointment;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CreateAppointmentController extends Controller
 {
     use AuthorizesRequests;
+
     public function __invoke()
     {
         $this->authorize('create', Appointment::class);
 
-        return Inertia::render('Appointment/Create');
+        $customers = User::Customer()->get();
+
+
+        return Inertia::render('Appointment/Create', [
+            'customers_data' => [],
+            'breadcrumbs' => [
+                ['title' => 'Agendamentos', 'href' => route('appointments.list')],
+            ]
+        ]);
     }
 }

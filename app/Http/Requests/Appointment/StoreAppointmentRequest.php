@@ -44,7 +44,7 @@ class StoreAppointmentRequest extends FormRequest
                         ->whereNotNull('email_verified_at')
                         ->whereNull('deleted_at');
                 }),
-                new MaxAppointmentsPerDoctorPerSlot(3, $this->scheduled_at)
+                new MaxAppointmentsPerDoctorPerSlot(3, $this->scheduled_at),
             ],
             'animal' => [
                 'required',
@@ -57,19 +57,19 @@ class StoreAppointmentRequest extends FormRequest
                 'required',
                 'string',
                 'min:10',
-                'max:150'
+                'max:150',
             ],
             'scheduled_at' => [
                 'required',
                 'date',
                 'date_format:Y-m-d H:i:s',
-                'after:today'
+                'after:today',
             ],
             'status' => [
                 'required',
                 'string',
-                Rule::in(array_column(AppointmentStatus::cases(), 'value'))
-            ]
+                Rule::in(array_column(AppointmentStatus::cases(), 'value')),
+            ],
         ];
     }
 }

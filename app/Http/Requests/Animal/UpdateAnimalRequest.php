@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Animal;
 
+use App\Helpers\Enums\UserRoles;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateAnimalRequest extends FormRequest
 {
@@ -11,7 +13,11 @@ class UpdateAnimalRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check() && auth()->user()->hasVerifiedEmail() && (
+            UserRoles::Receptionist ||
+            UserRoles::Admin ||
+            UserRoles::Doctor ||
+            UserRoles::Customer);
     }
 
     /**
@@ -23,6 +29,53 @@ class UpdateAnimalRequest extends FormRequest
     {
         return [
             //
+            'name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:30',
+            ],
+            'gender' => [
+                'required',
+                'string',
+                'in:m,f',
+            ],
+            'birthday' => [
+                'required',
+                'date',
+                'date_format:Y-m-d',
+                'before:today',
+            ],
+            'species' => [
+                'required',
+                'string',
+                'min:3',
+                'max:50'
+            ],
+            'breed' => [
+                'required',
+                'string',
+                'min:3',
+                'max:50'
+            ],
+            'doctor' => [
+                'nullable',
+                'string',
+                Rule::exists('users', 'username')->where(function ($query) {
+                    $query->where('role', UserRoles::Doctor->value)
+                        ->whereNotNull('email_verified_at')
+                        ->whereNUll('deleted_at');
+                })
+            ],
+            'owner' => [
+                'nullable',
+                'string',
+                Rule::exists('users', 'username')->where(function ($query) {
+                    $query->where('role', UserRoles::Customer->value)
+                        ->whereNotNull('email_verified_at')
+                        ->whereNull('deleted_at');
+                })
+            ]
         ];
     }
 }

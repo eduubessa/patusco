@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Helpers\Enums\UserRoles;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -57,21 +58,16 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    /**
-     * Verifica se o utilizador tem o determinado papel
-     *
-     * @param  string  $role  O papel a verificar  (ex: Customer, doctor, ou receptionist)
-     */
+    public function getRouteKeyName(): string
+    {
+        return 'username';
+    }
+
     public function hasRole(string $role): bool
     {
         return $this->role === $role;
     }
 
-    /**
-     * Verifica se o utilizador tem PELO MENOS UM dos PAPEIS fornecidos
-     *
-     * @param  array  $roles  Um array de papéis a verificar (ex: ['Customer', 'Doctor', 'Receptionist'])
-     */
     public function hasAnyRole(array $roles): bool
     {
         return in_array($this->role, $roles);
@@ -95,5 +91,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function animals(): BelongsToMany
     {
         return $this->belongsToMany(Animal::class, 'appointments');
+    }
+
+    public function scopeCustomer($query)
+    {
+        return $query->where('role', UserRoles::Customer);
+    }
+
+    public function scopeDoctor($query)
+    {
+        return $query->where('role', UserRoles::Doctor);
     }
 }

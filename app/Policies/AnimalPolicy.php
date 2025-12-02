@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
+use App\Helpers\Enums\UserRoles;
 use App\Models\Animal;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class AnimalPolicy
 {
@@ -13,7 +13,11 @@ class AnimalPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return in_array($user->role, [
+            UserRoles::Admin,
+            UserRoles::Receptionist,
+            UserRoles::Doctor
+        ]);
     }
 
     /**
@@ -21,7 +25,13 @@ class AnimalPolicy
      */
     public function view(User $user, Animal $animal): bool
     {
-        return false;
+        return match($user->role) {
+            UserRoles::Admin->value => true,
+            UserRoles::Receptionist->value => true,
+            UserRoles::Doctor->value => true,
+            UserRoles::Customer->value => $animal->owners->contains('id', $user->id),
+            default => false
+        };
     }
 
     /**
@@ -29,7 +39,12 @@ class AnimalPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return match($user->role) {
+            UserRoles::Admin->value => true,
+            UserRoles::Receptionist->value => true,
+            UserRoles::Customer->value => true,
+            default => false
+        };
     }
 
     /**
@@ -37,7 +52,13 @@ class AnimalPolicy
      */
     public function update(User $user, Animal $animal): bool
     {
-        return false;
+        return match($user->role) {
+            UserRoles::Admin->value => true,
+            UserRoles::Receptionist->value => true,
+            UserRoles::Doctor->value => true,
+            UserRoles::Customer->value => $animal->owners->containers('id', $user->id),
+            default => false
+        };
     }
 
     /**
@@ -45,7 +66,12 @@ class AnimalPolicy
      */
     public function delete(User $user, Animal $animal): bool
     {
-        return false;
+        return match ($user->role) {
+            UserRoles::Admin->value => true,
+            UserRoles::Receptionist->value => true,
+            UserRoles::Customer->value => $animal->owners->contains('id', $user->id),
+            default => false
+        };
     }
 
     /**

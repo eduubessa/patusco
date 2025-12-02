@@ -4,7 +4,7 @@ import { computed } from 'vue';
 import doctors from '@/routes/doctors';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
-import { type Doctor, type PaginatedData } from '@/types/Doctor';
+import { type doctor, type PaginatedData } from '@/types/doctor';
 import {
     formatDateTime,
     generateHashedColor,
@@ -12,7 +12,7 @@ import {
 } from '@/utils/formatters';
 
 interface Props {
-    doctors_data: PaginatedData<Doctor>,
+    doctors_data: PaginatedData<doctor>
     breadcrumbs: BreadcrumbItem[]
 }
 
@@ -35,7 +35,7 @@ const headers = [
 ];
 
 const data = computed(() => {
-    return doctors_data.data.map((doctor, index) => ({
+    return props.doctors_data.data.map((doctor, index) => ({
         ...doctor,
         line_number: index + 1,
         avatar: getInitials(doctor.name),
@@ -45,12 +45,15 @@ const data = computed(() => {
     }));
 });
 
-const handleOpendoctorDetailPage = (event: Event, { item }: { item: any}) => {
-    if(item.username){
-        window.location.href = doctors.list().url;
-    }
 
-    debugger;
+
+const handleOpenDoctorDetailPage = (event: Event, row: any) => {
+    const doctor = row?.item;
+
+    if(!doctor?.username) return;
+
+    router.visit(doctors.show(doctor.username).url)
+
 };
 
 const handlePageChange = (page: number) => {
@@ -63,9 +66,9 @@ const handlePageChange = (page: number) => {
 </script>
 
 <template>
-    <Head title="Utentes" />
+    <Head title="Veternários" />
 
-    <AppLayout :breadcrumbs="breadcrumbs" :title="'Veternários'"  :description="'Lista dos veternários'">
+    <AppLayout :breadcrumbs="props.breadcrumbs" :title="'Veternários'" :description="'Lista de veternários'">
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
@@ -77,7 +80,7 @@ const handlePageChange = (page: number) => {
                 loading-text="A carregar ..."
                 :show-select="true"
                 class="cursor-pointer"
-                @click:row="handleOpendoctorDetailPage"
+                @click:row.stop="handleOpenDoctorDetailPage"
             >
                 <template #item.avatar="{ item }">
                     <div class="py-2">
@@ -114,8 +117,8 @@ const handlePageChange = (page: number) => {
             </v-data-table-virtual>
             <div class="mt-6 flex justify-center my-5 text-sm">
                 <v-pagination
-                    :length="doctors_data.last_page"
-                    :model-value="doctors_data.current_page"
+                    :length="props.doctors_data.last_page"
+                    :model-value="props.doctors_data.current_page"
                     :total-visible="5"
                     @update:model-value="handlePageChange"
                     color="indigo-darken-3"

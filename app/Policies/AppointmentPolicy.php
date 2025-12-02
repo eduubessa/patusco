@@ -8,16 +8,17 @@ use App\Models\User;
 
 class AppointmentPolicy
 {
-    private const FULL_ACCESS = [UserRoles::Admin->value, UserRoles::Receptionist->value];
-
-    private const ALL_ROLES = [UserRoles::Admin->value, UserRoles::Doctor->value, UserRoles::Receptionist->value, UserRoles::Doctor->value];
-
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'receptionist', 'doctor', 'customer']);
+        return in_array($user->role, [
+            UserRoles::Admin->value,
+            UserRoles::Receptionist->value,
+            UserRoles::Doctor->value,
+            UserRoles::Customer->value
+        ]);
     }
 
     public function view(User $user, Appointment $appointment): bool
@@ -43,7 +44,7 @@ class AppointmentPolicy
      */
     public function update(User $user, Appointment $appointment): bool
     {
-        return match($user->role) {
+        return match ($user->role) {
             UserRoles::Admin->value, => true,
             UserRoles::Receptionist->value => true,
             UserRoles::Doctor->value => $appointment->doctor_id === $user->id,

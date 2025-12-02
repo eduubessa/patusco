@@ -12,9 +12,14 @@ class ListAppointments
         User $user,
         ?string $sortBy,
         ?string $sortDirection,
-        int $paginate = 7): LengthAwarePaginator
-    {
-        return Appointment::forUser($user)
+        int $paginate = 10,
+        ?string $species = null,
+        ?string $startDate = null,
+        ?string $endDate = null,
+    ): LengthAwarePaginator {
+        return Appointment::with('doctor', 'animal', 'animal.owners')
+            ->ofAnimalType($species)
+            ->betweenDates($startDate, $endDate)
             ->sortByColumn($sortBy, $sortDirection)
             ->paginate($paginate);
     }
