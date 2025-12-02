@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, watch } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
@@ -12,20 +12,47 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// 🔍 Texto digitado no autocomplete
 const searchCustomers = ref("");
+
+// 📌 Cliente selecionado
 const selectedCustomers = ref<Customer | null>(null);
 
-const filteredCustomers = computed(() => {
-    if (!searchCustomers.value) return customers.value;
+// 🆕 Lista vinda da API
+const remoteCustomers = ref<Customer[]>([]);
+const loading = ref(false);
 
-    const query = searchCustomers.value.toLowerCase();
+// ⏳ Debounce timer
+let debounceTimer: number | null = null;
 
-    return customers.value.filter(c =>
-        c.name.toLowerCase().includes(query) ||
-        (c.phone ?? "").includes(searchCustomers.value)
-    );
+// 🔎 Função para buscar clientes da API
+const fetchCustomers = async (query: string) => {
+    loading.value = true;
+
+    try {
+        const response = await fetch(`/api/customers?search=${encodeURIComponent(query)}`);
+        const json = await response.json();
+
+        // Laravel API Resource retorna { data: [...] }
+        remoteCustomers.value = json.data;
+    } catch (error) {
+        console.error("Erro ao buscar clientes:", error);
+    } finally {
+        loading.value = false;
+    }
+};
+
+// 🔁 Watcher com debounce de 300ms
+watch(searchCustomers, (value) => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+
+    debounceTimer = window.setTimeout(() => {
+        fetchCustomers(value);
+    }, 300);
 });
 
+// ➕ Evento para criar um cliente novo
 const addCustomerButtonClickHandler = () => {
     router.visit(customers.create().url);
 };
@@ -33,13 +60,17 @@ const addCustomerButtonClickHandler = () => {
 
 <template>
     <Head title="Criar Agendamento" />
-    <AppLayout :breadcrumbs="props.breadcrumbs" :title="'Novo agendamento'" :description="'Criar um novo agendamento'">
+    <AppLayout
+        :breadcrumbs="props.breadcrumbs"
+        :title="'Novo agendamento'"
+        :description="'Criar um novo agendamento'"
+    >
         <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
             <v-container max-width="700px" class="py-8">
 
                 <v-autocomplete
                     v-model="selectedCustomers"
-                    :items="filteredCustomers"
+                    :items="remoteCustomers"
                     :search="searchCustomers"
                     label="Cliente"
                     placeholder="Pesquisar cliente..."
@@ -48,6 +79,7 @@ const addCustomerButtonClickHandler = () => {
                     hide-details
                     variant="outlined"
                     density="comfortable"
+                    :loading="loading"
                     @update:search="searchCustomers = $event"
                 >
                     <template #no-data>
@@ -65,8 +97,8 @@ const addCustomerButtonClickHandler = () => {
                         </div>
                     </template>
                 </v-autocomplete>
+
             </v-container>
         </div>
     </AppLayout>
 </template>
-
