@@ -44,7 +44,13 @@ class StoreAppointmentRequest extends FormRequest
                         ->whereNotNull('email_verified_at')
                         ->whereNull('deleted_at');
                 }),
-                new MaxAppointmentsPerDoctorPerSlot(3, $this->scheduled_at),
+                function ($attribute, $value, $fail) {
+                    $scheduledAt = $this->input('scheduled_at');
+                    $rule = new MaxAppointmentsPerDoctorPerSlot($value, $scheduledAt);
+                    if (!$rule->passes($attribute, $value)) {
+                        $fail($rule->message());
+                    }
+                },
             ],
             'animal' => [
                 'required',
