@@ -1,0 +1,84 @@
+<script setup lang="ts">
+import { ref, watch, computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+
+const props = defineProps({
+    modelValue: Object | null,       // animal selecionado
+    customer: Object | null,         // customer selecionado (apenas para staff)
+});
+const emit = defineEmits(['update:modelValue']);
+
+const user = usePage().props.auth.user;
+const isCustomer = computed(() => user.role === 'customer');
+
+const animals = ref([]);
+const loading = ref(false);
+
+// Função para carregar animais
+const loadAnimals = async (customerUsername: string) => {
+    loading.value = true;
+    try {
+        const res = await fetch(`/api/customers/${customerUsername}`);
+        const json = await res.json();
+        animals.value = json.data.animals ?? [];
+    } catch (error) {
+        console.error('animals fetch error', error);
+        animals.value = [];
+    } finally {
+        loading.value = false;
+    }
+};
+
+// Carrega animais automaticamente se for customer
+if (isCustomer.value) {
+    loadAnimals(user.username);
+}
+
+// Carrega animais quando staff muda de customer
+watch(() => props.customer, (customer) => {
+    if (!customer) {
+        animals.value = [];
+        emit('update:modelValue', null);
+        return;
+    }
+    loadAnimals(customer.username);
+});
+</script>
+
+<template>
+    <div class="form-row">
+        <label class="form-label">Animal</label>
+        <v-select
+            v-model="props.modelValue"
+            @update:model-value="val => emit('update:modelValue', val)"
+            :items="animals"
+            item-title="name"
+            item-value="id"
+            return-object
+            :loading="loading"
+            :disabled="(!isCustomer && !props.customer) || animals.length === 0"
+            variant="outlined"
+            density="comfortable"
+            class="form-input"
+        />
+    </div>
+</template>
+
+<style scoped>
+.form-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.form-label {
+    width: 180px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-input {
+    flex: 1;
+}
+</style>
