@@ -1,4 +1,4 @@
-export interface Appointment {
+export interface AppointmentType {
     id: string,
     situation: string,
     created_at: Date,

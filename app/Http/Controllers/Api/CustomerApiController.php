@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\Enums\UserRoles;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CustomerResource;
 use App\Models\User;
@@ -19,7 +20,7 @@ class CustomerApiController extends Controller
         $searchTerm = $request->query('search');
 
         if(empty($searchTerm) || strlen($searchTerm) < 3) {
-            return response()->json([]);
+            $customers = User::Customer()->latest()->get();
         }
 
         $customers = User::query()
@@ -32,6 +33,7 @@ class CustomerApiController extends Controller
                     $q->orWhere('phone_number', 'like', '%' . $searchTerm . '%');
                 }
             })
+            ->Customer()
             ->limit(20)
             ->select('id', 'name', 'username', 'email')
             ->get();
@@ -59,9 +61,14 @@ class CustomerApiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(Request $request, User $user)
     {
         //
+        if($user->role !== UserRoles::Customer->value) abort(404);
+
+        $customer = $user->load('animals');
+
+        return new CustomerResource($customer);
     }
 
     /**

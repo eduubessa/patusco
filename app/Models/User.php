@@ -90,7 +90,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function animals(): BelongsToMany
     {
-        return $this->belongsToMany(Animal::class, 'appointments');
+        return $this->belongsToMany(Animal::class, 'animal_user', 'owner_id', 'animal_id');
     }
 
     public function scopeCustomer($query)
