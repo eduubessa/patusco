@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
     modelValue: Object,
 });
 const emit = defineEmits(['update:modelValue']);
 
+const recentCustomers = ref([])
 const searchCustomers = ref('');
 const customers = ref([]);
 const loading = ref(false);
@@ -28,6 +29,21 @@ const fetchCustomers = async (query: string) => {
 watch(searchCustomers, (val) => {
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => fetchCustomers(val), 300);
+});
+
+onMounted(async ()  => {
+    loading.value = true;
+    try {
+        const res = await fetch(`/api/customers?sort=updated_at&dir=desc&items_per_page=3`)
+        const json = await res.json()
+
+        recentCustomers.value = json.data ?? [];
+        customers.value = [...recentCustomers.value];
+    }catch(error){
+        console.error(error);
+    }finally{
+        loading.value = false;
+    }
 });
 </script>
 

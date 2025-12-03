@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import appointments from '@/routes/appointments';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import format from 'date-fns/format';
 
 import CustomerSelector from '@/components/CustomerSelector.vue';
 import AnimalSelector from '@/components/AnimalSelector.vue';
@@ -22,13 +22,14 @@ const props = defineProps<Props>();
 const user = computed(() => usePage().props.auth.user);
 const isCustomer = computed(() => user.value.role === 'customer');
 
-// FORM MODEL
 const selectedCustomer = ref(isCustomer.value ? user.value : null);
 const selectedAnimal = ref(null);
 const situation = ref('');
+
 const period = ref(null);
 const hour = ref(null);
 const date = ref(null);
+
 const selectedDoctor = ref(null);
 const status = ref('pending');
 
@@ -42,17 +43,32 @@ const canSubmit = computed(() =>
     situation.value
 );
 
-const submit = () => {
+const submit = async () => {
     if (!canSubmit.value) return;
 
-    router.post('/appointments', {
-        customer: isCustomer.value ? user.value.username : selectedCustomer.value.username,
-        animal: selectedAnimal.value.slug,
-        doctor: isCustomer.value ? null : selectedDoctor.value.username,
-        situation: situation.value,
-        scheduled_at: `${date.value} ${hour.value}`,
-        status: status.value,
-    });
+    console.log(date.value);
+    debugger;
+
+    try {
+        await router.post('/appointments', {
+            customer: isCustomer.value ? user.value.username : selectedCustomer.value.username,
+            animal: selectedAnimal.value.slug,
+            doctor: isCustomer.value ? undefined : selectedDoctor.value.username,
+            situation: situation.value,
+            scheduled_at: date.value,
+            status: status.value,
+        }, {
+            onSuccess: () => {
+                // ex: limpar form ou redirecionar
+            },
+            onError: (errors) => {
+                // ex: mostrar mensagens de erro no UI
+                console.log(errors);
+            }
+        });
+    } catch (err) {
+        console.error('Erro ao criar agendamento', err);
+    }
 };
 </script>
 
@@ -77,9 +93,11 @@ const submit = () => {
                     :customer="selectedCustomer"
                 />
 
-                <SituationInput v-model="situation" />
-
-                <DateTimeSelector v-model="period" />
+                <DateTimeSelector
+                    v-model:period="period"
+                    v-model:hour="hour"
+                    v-model:date="date"
+                />
 
                 <DoctorSelector
                     v-if="!isCustomer"
@@ -87,11 +105,38 @@ const submit = () => {
                     :period="period"
                     :hour="hour"
                     :date="date"
-                    :staticDoctors="props.doctors"
+                    :staticDoctors="props.doctors ?? []"
                 />
 
-                <!-- Status -->
                 <StatusSelector v-model="status" />
+
+                <SituationInput v-model="situation" />
+
+                <v-row>
+                    <v-col class="text-right">
+                        <v-btn
+                            :disabled="!canSubmit"
+                            color="primary"
+                            @click="submit"
+                            :loading="isSubmitting"
+                        >
+                            Criar Agendamento
+                        </v-btn>
+                    </v-col>
+                </v-row>
+
+                <v-row>
+                    <v-col class="text-right">
+                        <v-btn
+                            :disabled="!canSubmit"
+                            color="primary"
+                            @click="submit"
+                            :loading="isSubmitting"
+                        >
+                            Criar Agendamento
+                        </v-btn>
+                    </v-col>
+                </v-row>
             </v-container>
         </div>
     </AppLayout>

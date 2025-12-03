@@ -18,6 +18,9 @@ class CustomerApiController extends Controller
     {
         //
         $searchTerm = $request->query('search');
+        $sortBy = $request->query('sort');
+        $sortDirection = $request->query('dir');
+        $itemsPerPage = $request->query('items_per_page') ?? 10;
 
         if(empty($searchTerm) || strlen($searchTerm) < 3) {
             $customers = User::Customer()->latest()->get();
@@ -33,11 +36,16 @@ class CustomerApiController extends Controller
                     $q->orWhere('phone_number', 'like', '%' . $searchTerm . '%');
                 }
             })
-            ->Customer()
-            ->limit(20)
+            ->Customer();
+
+        if($sortBy && $sortDirection) {
+            if(preg_match('(asc|desc)', $sortDirection) !== 1) abort(404);
+            $customers = $customers->orderBy($sortBy, $sortDirection);
+        }
+
+        $customers = $customers->limit($itemsPerPage)
             ->select('id', 'name', 'username', 'email')
             ->get();
-
 
         return CustomerResource::collection($customers);
     }
