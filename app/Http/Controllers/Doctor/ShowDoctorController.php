@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Doctor;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class ShowDoctorController extends Controller
+final class ShowDoctorController extends Controller
 {
     /**
      * Handle the incoming request.

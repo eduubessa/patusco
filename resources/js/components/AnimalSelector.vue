@@ -4,7 +4,8 @@ import { usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     modelValue: Object,
-    customer: Object
+    customer: Object,
+    validation: String
 });
 const emit = defineEmits(['update:modelValue']);
 
@@ -50,13 +51,16 @@ watch(() => props.customer, customer => {
             v-model="internalValue"
             :items="animals"
             item-title="name"
-            item-value="id"
+            item-value="slug"
             return-object
             :loading="loading"
+            @update:model-value="val => emit('update:modelValue', val)"
             :disabled="(!isCustomer.value && !props.customer) || animals.length === 0"
             variant="outlined"
             density="comfortable"
             class="form-input"
+            :error="props.validation != null && props.validation.length > 0"
+            :error-messages="props.validation"
         />
     </div>
 </template>

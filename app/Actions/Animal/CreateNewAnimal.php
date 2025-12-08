@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Animal;
 
 use App\Helpers\Enums\UserRoles;
@@ -8,14 +10,15 @@ use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Throwable;
 
-class CreateNewAnimal
+final class CreateNewAnimal
 {
     /**
-     * @param array $data Data from request input
-     * @param User $creator Data from user logged
-     * @return Animal
-     * @throws \Throwable
+     * @param  array  $data  Data from request input
+     * @param  User  $creator  Data from user logged
+     *
+     * @throws Throwable
      */
     public function handle(array $data, User $creator): Animal
     {
@@ -29,9 +32,9 @@ class CreateNewAnimal
                 'slug' => $this->generateUniqueSlug(),
             ]);
 
-            if($creator->role === UserRoles::Customer->value){
+            if ($creator->role === UserRoles::Customer->value) {
                 $animal->owners()->attach($creator->id, ['main_owner' => true]);
-            }else{
+            } else {
                 $owner = User::where('username', $data['owner'])
                     ->where('role', UserRoles::Customer->value)
                     ->firstOrFail();
@@ -46,7 +49,7 @@ class CreateNewAnimal
     private function generateUniqueSlug(): string
     {
         do {
-            $slug = substr(hash('xxh3', microtime(true).Str::uuid()), 0, 12);
+            $slug = mb_substr(hash('xxh3', microtime(true).Str::uuid()), 0, 12);
         } while (Animal::where('slug', $slug)->exists());
 
         return $slug;

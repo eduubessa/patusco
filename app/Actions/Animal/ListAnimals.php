@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Animal;
 
 use App\Models\Animal;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class ListAnimals
+final class ListAnimals
 {
     /**
      * Create a new class instance.

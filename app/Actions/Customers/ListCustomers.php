@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Customers;
 
 use App\Models\User;
 
-class ListCustomers
+final class ListCustomers
 {
     public function handle(string $sortBy = 'updated_at', string $direction = 'desc', int $perPage = 12)
     {

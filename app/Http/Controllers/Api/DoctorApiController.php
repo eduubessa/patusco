@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -8,7 +10,7 @@ use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class DoctorApiController extends Controller
+final class DoctorApiController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,14 +22,13 @@ class DoctorApiController extends Controller
         $hour = $request->query('hour') ?? null;
         $date = $request->query('date') ?? null;
 
-
-        if($period === null || $hour === null || $date === null){
+        if ($period === null || $hour === null || $date === null) {
             return response()->json(['data' => ['sem dados']]);
         }
 
-        $availableDoctors = User::doctor()->get()->filter(function($doctor) use ($date, $hour) {
+        $availableDoctors = User::doctor()->get()->filter(function ($doctor) use ($date, $hour) {
             return Appointment::where('doctor_id', $doctor->id)
-                ->where('scheduled_at', $date . ' ' . $hour)
+                ->where('scheduled_at', $date.' '.$hour)
                 ->count() < 3;
         });
 

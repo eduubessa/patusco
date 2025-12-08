@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class ShowUserController extends Controller
+final class ShowUserController extends Controller
 {
     /**
      * Handle the incoming request.

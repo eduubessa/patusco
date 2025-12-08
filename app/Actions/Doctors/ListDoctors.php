@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Doctors;
 
 use App\Models\User;
 
-class ListDoctors
+final class ListDoctors
 {
     /**
      * Create a new class instance.

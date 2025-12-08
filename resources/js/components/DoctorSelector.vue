@@ -7,7 +7,8 @@ const props = defineProps({
     date: [String, null],
     period: [String, null],
     hour: [String, null],
-    staticDoctors: Array as () => Doctor[] | undefined
+    staticDoctors: Array as () => Doctor[] | undefined,
+    validation: String
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -73,6 +74,8 @@ watch([() => props.date, () => props.period, () => props.hour], fetchAvailableDo
             density="comfortable"
             class="form-input"
             :disabled="!shouldFetch || loadingDoctors"
+            :error="props.validation != null && props.validation.length > 0"
+            :error-messages="props.validation"
         />
     </div>
 </template>

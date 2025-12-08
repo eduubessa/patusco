@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Appointment;
 
 use App\Actions\Appointment\CreateNewAppointment;
@@ -8,8 +10,10 @@ use App\Http\Requests\Appointment\StoreAppointmentRequest;
 use App\Models\Appointment;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
+use Log;
+use Throwable;
 
-class StoreAppointmentController extends Controller
+final class StoreAppointmentController extends Controller
 {
     use AuthorizesRequests;
 
@@ -35,13 +39,13 @@ class StoreAppointmentController extends Controller
                 ->route('appointments.show', $appointment)
                 ->with('success', 'Consulta agendada com sucesso.');
 
-        }catch (\Throwable $e){
-            \Log::error("Appointment store failed. Message: {$e->getMessage()}");
+        } catch (Throwable $e) {
+            Log::error("Appointment store failed. Message: {$e->getMessage()}");
 
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'Appointment store failed.');
+                ->with('err', 'Appointment store failed.');
         }
     }
 }

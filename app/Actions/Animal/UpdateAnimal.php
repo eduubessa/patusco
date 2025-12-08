@@ -1,13 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Animal;
 
-use App\Actions\Appointment\UpdateAppointment;
 use App\Models\Animal;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Carbon;
 
-class UpdateAnimal
+final class UpdateAnimal
 {
     /**
      * Create a new class instance.
@@ -25,7 +24,7 @@ class UpdateAnimal
             'breed' => $data['breed'],
         ];
 
-        if(!$animal->update($update_data)){
+        if (! $animal->update($update_data)) {
             return false;
         }
 

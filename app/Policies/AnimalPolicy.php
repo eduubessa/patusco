@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use App\Helpers\Enums\UserRoles;
 use App\Models\Animal;
 use App\Models\User;
 
-class AnimalPolicy
+final class AnimalPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -16,7 +18,7 @@ class AnimalPolicy
         return in_array($user->role, [
             UserRoles::Admin,
             UserRoles::Receptionist,
-            UserRoles::Doctor
+            UserRoles::Doctor,
         ]);
     }
 
@@ -25,7 +27,7 @@ class AnimalPolicy
      */
     public function view(User $user, Animal $animal): bool
     {
-        return match($user->role) {
+        return match ($user->role) {
             UserRoles::Admin->value => true,
             UserRoles::Receptionist->value => true,
             UserRoles::Doctor->value => true,
@@ -39,7 +41,7 @@ class AnimalPolicy
      */
     public function create(User $user): bool
     {
-        return match($user->role) {
+        return match ($user->role) {
             UserRoles::Admin->value => true,
             UserRoles::Receptionist->value => true,
             UserRoles::Customer->value => true,
@@ -52,7 +54,7 @@ class AnimalPolicy
      */
     public function update(User $user, Animal $animal): bool
     {
-        return match($user->role) {
+        return match ($user->role) {
             UserRoles::Admin->value => true,
             UserRoles::Receptionist->value => true,
             UserRoles::Doctor->value => true,

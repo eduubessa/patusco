@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Helpers\Enums\AppointmentStatus;
 use App\Models\Animal;
 use App\Models\Appointment;

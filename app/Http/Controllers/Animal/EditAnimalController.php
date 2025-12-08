@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Animal;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class EditAnimalController extends Controller
+final class EditAnimalController extends Controller
 {
     /**
      * Handle the incoming request.

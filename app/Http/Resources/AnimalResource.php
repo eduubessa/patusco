@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AnimalResource extends JsonResource
+final class AnimalResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,7 +20,8 @@ class AnimalResource extends JsonResource
             'name' => $this->name,
             'species' => $this->species,
             'breed' => $this->breed,
-            'birthday' => $this->birthday
+            'birthday' => $this->birthday,
+            'slug' => $this->slug,
         ];
     }
 }

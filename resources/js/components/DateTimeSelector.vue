@@ -3,10 +3,12 @@ import { ref, watch, computed, onMounted } from 'vue';
 import { useHolidays } from '@/utils/holidays';
 
 const props = defineProps({
-    date: String | null,
-    period: String | null,
-    hour: String | null,
+    date: [String, null],
+    period: [String, null],
+    hour: [String, null],
+    validation: String
 });
+
 const emit = defineEmits(['update:date', 'update:period', 'update:hour']);
 
 const { loadHolidays, isAllowed } = useHolidays();
@@ -30,7 +32,6 @@ function toIsoDate(val: string | Date) {
 
     if (parts.length === 3) {
         if (parts[0].length === 4) {
-            // yyyy-mm-dd
             const [y, m, d] = parts;
             const dObj = new Date(`${y}-${m}-${d}`);
             if (!isNaN(dObj.getTime())) return `${y}-${m}-${d}`;
@@ -76,6 +77,7 @@ const hourOptions = ref<string[]>([]);
 
 const selectedPeriod = ref(props.period);
 const selectedHour = ref(props.hour);
+const datetimeFinal = ref(null);
 
 watch(selectedPeriod, val => {
     if (val === 'Manhã') hourOptions.value = ['08:00', '09:00', '10:00', '11:00'];
@@ -86,7 +88,14 @@ watch(selectedPeriod, val => {
     emit('update:hour', null);
 });
 
-watch(selectedHour, val => emit('update:hour', val));
+watch(selectedHour, val => {
+    console.log('Selected hour changed:', val);
+    console.log('Display date:', displayDate.value);
+
+    datetimeFinal.value = `${displayDate.value} ${val}`;
+
+    emit('update:hour', val);
+});
 
 onMounted(() => {
     loadHolidays();
@@ -112,9 +121,11 @@ onMounted(() => {
                         placeholder="Escolha a data"
                         dense
                         variant="outlined"
-                        hide-details
+                        hide-details="auto"
                         readonly
                         style="flex:1"
+                        :error="props.validation != null && props.validation.length > 0"
+                        :error-messages="props.validation"
                     />
                 </template>
                 <v-date-picker
@@ -132,6 +143,7 @@ onMounted(() => {
                 hide-details
                 style="flex:1"
                 :disabled="!pickerDate"
+                :error="props.validation != null && props.validation.length > 0"
             />
 
             <v-select
@@ -142,6 +154,7 @@ onMounted(() => {
                 hide-details
                 style="flex:1"
                 :disabled="!selectedPeriod"
+                :error="props.validation != null && props.validation.length > 0"
             />
         </div>
     </div>

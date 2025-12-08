@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { ref, computed, watch, reactive } from 'vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
-import format from 'date-fns/format';
 
 import CustomerSelector from '@/components/CustomerSelector.vue';
 import AnimalSelector from '@/components/AnimalSelector.vue';
@@ -18,6 +17,7 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+const errors = reactive({ ...usePage().props.errors });
 
 const user = computed(() => usePage().props.auth.user);
 const isCustomer = computed(() => user.value.role === 'customer');
@@ -46,8 +46,14 @@ const canSubmit = computed(() =>
 const submit = async () => {
     if (!canSubmit.value) return;
 
-    console.log(date.value);
-    debugger;
+    console.log('Submitting appointment', {
+        customer: isCustomer.value ? user.value.username : selectedCustomer.value.username,
+        animal: selectedAnimal.value.slug,
+        doctor: isCustomer.value ? undefined : selectedDoctor.value.username,
+        situation: situation.value,
+        scheduled_at: date.value,
+        status: status.value,
+    });
 
     try {
         await router.post('/appointments', {
@@ -58,18 +64,23 @@ const submit = async () => {
             scheduled_at: date.value,
             status: status.value,
         }, {
-            onSuccess: () => {
-                // ex: limpar form ou redirecionar
-            },
-            onError: (errors) => {
-                // ex: mostrar mensagens de erro no UI
+        onSuccess: () => {
+            // ex: limpar form ou redirecionar
+            console.log(`Submit success`);
+        },
+            onError: () => {
+                console.log(`Submit error`);
                 console.log(errors);
-            }
-        });
+        }
+    });
     } catch (err) {
         console.error('Erro ao criar agendamento', err);
     }
 };
+
+watch(() => usePage().props.errors,
+    (val) => Object.assign(errors, val)
+);
 </script>
 
 <template>
@@ -86,17 +97,20 @@ const submit = async () => {
                 <CustomerSelector
                     v-if="!isCustomer"
                     v-model="selectedCustomer"
+                    :validation="errors.customer"
                 />
 
                 <AnimalSelector
                     v-model="selectedAnimal"
                     :customer="selectedCustomer"
+                    :validation="errors.animal"
                 />
 
                 <DateTimeSelector
                     v-model:period="period"
                     v-model:hour="hour"
                     v-model:date="date"
+                    :validation="errors.scheduled_at"
                 />
 
                 <DoctorSelector
@@ -106,18 +120,18 @@ const submit = async () => {
                     :hour="hour"
                     :date="date"
                     :staticDoctors="props.doctors ?? []"
+                    :validation="errors.doctor"
                 />
 
-                <StatusSelector v-model="status" />
+                <StatusSelector v-if="!isCustomer" v-model="status" :validation="errors.status" />
 
-                <SituationInput v-model="situation" />
+                <SituationInput v-model="situation" :validation="errors.situation" />
 
                 <v-row>
                     <v-col class="text-right">
                         <v-btn
-                            :disabled="!canSubmit"
-                            color="primary"
                             @click="submit"
+                            :disabled="!canSubmit"
                             :loading="isSubmitting"
                         >
                             Criar Agendamento
@@ -125,18 +139,6 @@ const submit = async () => {
                     </v-col>
                 </v-row>
 
-                <v-row>
-                    <v-col class="text-right">
-                        <v-btn
-                            :disabled="!canSubmit"
-                            color="primary"
-                            @click="submit"
-                            :loading="isSubmitting"
-                        >
-                            Criar Agendamento
-                        </v-btn>
-                    </v-col>
-                </v-row>
             </v-container>
         </div>
     </AppLayout>

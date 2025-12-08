@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
 
 use App\Helpers\Enums\UserRoles;
 use App\Models\Animal;
 use App\Models\User;
+
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
@@ -16,7 +18,6 @@ test('admin can access to update animal screen ', function () {
         ->assertStatus(200)
         ->assertOk();
 });
-
 
 test('receptionist can access to update animal screen', function () {
     $animal = Animal::factory()->create();
@@ -66,7 +67,7 @@ test('guest cannot access to update animal screen', function () {
         ->assertRedirect('/login');
 });
 
-test("admin can update animal", function () {
+test('admin can update animal', function () {
     $animal = Animal::factory()->create();
     $user = User::factory()->verified()->create(['role' => UserRoles::Admin->value]);
     $customer = User::factory()->verified()->create(['role' => UserRoles::Customer->value]);
@@ -78,7 +79,7 @@ test("admin can update animal", function () {
             'birthday' => '2020-06-05',
             'species' => 'Specie One',
             'breed' => 'Breed Four',
-            'owner' => $customer->username
+            'owner' => $customer->username,
         ])
         ->assertStatus(302)
         ->assertRedirect("animals/{$animal->slug}");
@@ -88,6 +89,6 @@ test("admin can update animal", function () {
         'sex' => 'm',
         'birthday' => '2020-06-05',
         'species' => 'Specie One',
-        'breed' => 'Breed Four'
+        'breed' => 'Breed Four',
     ]);
 });

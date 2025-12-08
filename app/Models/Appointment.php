@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Helpers\Enums\AppointmentStatus;
@@ -11,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Appointment extends Model
+final class Appointment extends Model
 {
     /** @use HasFactory<\Database\Factories\AppointmentFactory> */
     use HasFactory, HasUuids, SoftDeletes;
@@ -63,7 +65,7 @@ class Appointment extends Model
         return $this->belongsTo(Animal::class, 'animal_id');
     }
 
-    ### Sorting ###
+    // ## Sorting ###
 
     public function scopeSortByColumn($query, ?string $column = null, ?string $direction = null)
     {
@@ -74,13 +76,13 @@ class Appointment extends Model
         }
 
         $direction = $direction ?? 'asc';
-        $direction = strtolower($direction);
+        $direction = mb_strtolower($direction);
         $direction = $direction === 'desc' ? 'desc' : 'asc';
 
         return $query->orderBy($column, $direction);
     }
 
-    ### Filters ###
+    // ## Filters ###
     public function scopeForUser($query, User $user)
     {
         return match ($user->role) {
@@ -100,15 +102,19 @@ class Appointment extends Model
 
     public function scopeOfAnimalType($query, ?string $species)
     {
-        if($species) return $query->whereHas('animal', fn ($q) => $q->where('species', $species));
+        if ($species) {
+            return $query->whereHas('animal', fn ($q) => $q->where('species', $species));
+        }
     }
 
     public function scopeBetweenDates($query, ?string $start, ?string $end)
     {
-        if($start && $end) return $query->whereBetween('scheduled_at', [
-            Carbon::parse($start)->startOfDay(),
-            Carbon::parse($end)->endOfDay(),
-        ]);
+        if ($start && $end) {
+            return $query->whereBetween('scheduled_at', [
+                Carbon::parse($start)->startOfDay(),
+                Carbon::parse($end)->endOfDay(),
+            ]);
+        }
     }
 
     public function scopeAllSpecies($query)
@@ -118,5 +124,4 @@ class Appointment extends Model
             ->orderBy('animals.species')
             ->pluck('animals.species');
     }
-
 }

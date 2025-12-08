@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Animal;
 
 use App\Actions\Animal\ListAnimals;
@@ -7,7 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class ListAnimalController extends Controller
+final class ListAnimalController extends Controller
 {
     /**
      * Handle the incoming request.

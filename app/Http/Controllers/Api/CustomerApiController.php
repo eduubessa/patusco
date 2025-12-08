@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\Enums\UserRoles;
@@ -7,9 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CustomerResource;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
-class CustomerApiController extends Controller
+final class CustomerApiController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,24 +23,26 @@ class CustomerApiController extends Controller
         $sortDirection = $request->query('dir');
         $itemsPerPage = $request->query('items_per_page') ?? 10;
 
-        if(empty($searchTerm) || strlen($searchTerm) < 3) {
+        if (empty($searchTerm) || mb_strlen($searchTerm) < 3) {
             $customers = User::Customer()->latest()->get();
         }
 
         $customers = User::query()
             ->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('email', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('username', 'like', '%' . $searchTerm . '%');
+                $q->where('name', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('email', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('username', 'like', '%'.$searchTerm.'%');
 
-                if(is_numeric($searchTerm)) {
-                    $q->orWhere('phone_number', 'like', '%' . $searchTerm . '%');
+                if (is_numeric($searchTerm)) {
+                    $q->orWhere('phone_number', 'like', '%'.$searchTerm.'%');
                 }
             })
             ->Customer();
 
-        if($sortBy && $sortDirection) {
-            if(preg_match('(asc|desc)', $sortDirection) !== 1) abort(404);
+        if ($sortBy && $sortDirection) {
+            if (preg_match('(asc|desc)', $sortDirection) !== 1) {
+                abort(404);
+            }
             $customers = $customers->orderBy($sortBy, $sortDirection);
         }
 
@@ -72,7 +75,9 @@ class CustomerApiController extends Controller
     public function show(Request $request, User $user)
     {
         //
-        if($user->role !== UserRoles::Customer->value) abort(404);
+        if ($user->role !== UserRoles::Customer->value) {
+            abort(404);
+        }
 
         $customer = $user->load('animals');
 

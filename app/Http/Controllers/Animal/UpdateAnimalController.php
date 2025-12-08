@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Animal;
 
 use App\Actions\Animal\UpdateAnimal;
@@ -8,8 +10,10 @@ use App\Http\Requests\Animal\UpdateAnimalRequest;
 use App\Models\Animal;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Log;
+use Throwable;
 
-class UpdateAnimalController extends Controller
+final class UpdateAnimalController extends Controller
 {
     use AuthorizesRequests;
 
@@ -29,8 +33,8 @@ class UpdateAnimalController extends Controller
                 ->route('animals.show', $animal)
                 ->with('success', 'O animal foi atualizado com sucesso.');
 
-        }catch(\Throwable $e){
-            \Log::error("Update animal failed: {$e->getMessage()}");
+        } catch (Throwable $e) {
+            Log::error("Update animal failed: {$e->getMessage()}");
 
             return redirect()
                 ->back()

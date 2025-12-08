@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Rules;
 
 use App\Models\Appointment;
@@ -7,21 +9,21 @@ use Carbon\Carbon;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class MaxAppointmentsPerDoctorPerSlot implements ValidationRule
+final class MaxAppointmentsPerDoctorPerSlot implements ValidationRule
 {
     /**
      * @param  int  $maxAppointmentsPerDoctor  Maximum appointments allowed per doctor in a slot
      * @param  string  $scheduledAt  The scheduled datetime to check against
      */
     public function __construct(
-        protected int $maxAppointmentsPerDoctor,
-        protected string $scheduledAt
+        private int $maxAppointmentsPerDoctor,
+        private string $scheduledAt
     ) {}
 
     /**
      * Run the validation rule.
      *
-     * @param  \Closure(string, ?string=): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param  Closure(string, ?string=): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {

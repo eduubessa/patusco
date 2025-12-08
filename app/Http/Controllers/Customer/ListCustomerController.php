@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Customer;
 
 use App\Actions\Customers\ListCustomers;
@@ -7,7 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class ListCustomerController extends Controller
+final class ListCustomerController extends Controller
 {
     //
     public function __invoke(Request $request, ListCustomers $listCustomers)

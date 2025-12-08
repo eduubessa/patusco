@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Appointment;
 
 use App\Actions\Appointment\ListAppointments;
@@ -9,7 +11,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class ListAppointmentController extends Controller
+final class ListAppointmentController extends Controller
 {
     //
     use AuthorizesRequests;
@@ -40,7 +42,7 @@ class ListAppointmentController extends Controller
             'species' => Appointment::allSpecies(),
             'breadcrumbs' => [
                 ['title' => 'Agendamentos', 'href' => route('appointments.list')],
-            ]
+            ],
         ]);
     }
 }

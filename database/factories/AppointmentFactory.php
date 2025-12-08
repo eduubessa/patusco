@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Helpers\Enums\AppointmentStatus;
@@ -11,7 +13,7 @@ use Illuminate\Support\Str;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Appointment>
  */
-class AppointmentFactory extends Factory
+final class AppointmentFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -38,7 +40,7 @@ class AppointmentFactory extends Factory
         ];
     }
 
-    public function withExistingAnimal(): AppointmentFactory|Factory
+    public function withExistingAnimal(): self|Factory
     {
         return $this->state(function () {
             $animal = Animal::inRandomOrder()->first() ?? Animal::factory()->create();
@@ -49,7 +51,7 @@ class AppointmentFactory extends Factory
         });
     }
 
-    public function withExistingDoctor(): AppointmentFactory|Factory
+    public function withExistingDoctor(): self|Factory
     {
         return $this->state(function () {
             $doctor = User::doctor()->inRandomOrder()->first() ?? User::factory()->create(['role' => 'doctor']);

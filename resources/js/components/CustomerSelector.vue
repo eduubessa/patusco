@@ -3,7 +3,9 @@ import { onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
     modelValue: Object,
+    validation: String
 });
+
 const emit = defineEmits(['update:modelValue']);
 
 const recentCustomers = ref([])
@@ -45,6 +47,8 @@ onMounted(async ()  => {
         loading.value = false;
     }
 });
+
+
 </script>
 
 <template>
@@ -62,6 +66,8 @@ onMounted(async ()  => {
             variant="outlined"
             density="comfortable"
             class="form-input"
+            :error="props.validation != null && props.validation.length > 0"
+            :error-messages="props.validation"
         />
     </div>
 </template>

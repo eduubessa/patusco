@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use App\Helpers\Enums\UserRoles;
 use App\Models\Appointment;
 use App\Models\User;
 
-class AppointmentPolicy
+final class AppointmentPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -17,7 +19,7 @@ class AppointmentPolicy
             UserRoles::Admin->value,
             UserRoles::Receptionist->value,
             UserRoles::Doctor->value,
-            UserRoles::Customer->value
+            UserRoles::Customer->value,
         ]);
     }
 

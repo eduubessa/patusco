@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Animal;
 
 use App\Http\Controllers\Controller;
@@ -7,7 +9,7 @@ use App\Models\Animal;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class ShowAnimalController extends Controller
+final class ShowAnimalController extends Controller
 {
     /**
      * Handle the incoming request.
@@ -21,8 +23,8 @@ class ShowAnimalController extends Controller
             'animal' => $animal,
             'breadcrumbs' => [
                 'title' => 'Animais',
-                'url' => route('animals.list')
-            ]
+                'url' => route('animals.list'),
+            ],
         ]);
     }
 }

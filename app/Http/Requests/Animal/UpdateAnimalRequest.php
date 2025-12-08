@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Animal;
 
 use App\Helpers\Enums\UserRoles;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateAnimalRequest extends FormRequest
+final class UpdateAnimalRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -50,13 +52,13 @@ class UpdateAnimalRequest extends FormRequest
                 'required',
                 'string',
                 'min:3',
-                'max:50'
+                'max:50',
             ],
             'breed' => [
                 'required',
                 'string',
                 'min:3',
-                'max:50'
+                'max:50',
             ],
             'doctor' => [
                 'nullable',
@@ -65,7 +67,7 @@ class UpdateAnimalRequest extends FormRequest
                     $query->where('role', UserRoles::Doctor->value)
                         ->whereNotNull('email_verified_at')
                         ->whereNUll('deleted_at');
-                })
+                }),
             ],
             'owner' => [
                 'nullable',
@@ -74,8 +76,8 @@ class UpdateAnimalRequest extends FormRequest
                     $query->where('role', UserRoles::Customer->value)
                         ->whereNotNull('email_verified_at')
                         ->whereNull('deleted_at');
-                })
-            ]
+                }),
+            ],
         ];
     }
 }

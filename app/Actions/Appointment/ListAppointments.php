@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Appointment;
 
 use App\Helpers\Enums\UserRoles;
@@ -7,7 +9,7 @@ use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class ListAppointments
+final class ListAppointments
 {
     public function handle(
         User $user,
@@ -22,9 +24,9 @@ class ListAppointments
             ->ofAnimalType($species)
             ->betweenDates($startDate, $endDate);
 
-        if($user->hasRole(UserRoles::Customer->value)){
+        if ($user->hasRole(UserRoles::Customer->value)) {
             $query->where('customer_id', $user->id);
-        }else if($user->hasRole(UserRoles::Doctor->value)){
+        } elseif ($user->hasRole(UserRoles::Doctor->value)) {
             $query->where('doctor_id', $user->id);
         }
 

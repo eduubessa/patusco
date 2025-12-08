@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Appointment;
 
 use App\Models\Appointment;
 
-class UpdateAppointment
+final class UpdateAppointment
 {
     public function update(
         Appointment $appointment,

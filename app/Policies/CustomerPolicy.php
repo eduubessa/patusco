@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use App\Models\User;
 
-class CustomerPolicy
+final class CustomerPolicy
 {
     /**
      * Determine whether the user can view any models.

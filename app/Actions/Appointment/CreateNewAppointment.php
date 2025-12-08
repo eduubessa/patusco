@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Appointment;
 
 use App\Models\Appointment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class CreateNewAppointment
+final class CreateNewAppointment
 {
     public function handle(array $data): Appointment
     {
@@ -26,10 +28,10 @@ class CreateNewAppointment
         });
     }
 
-    protected function generateUniqueSlug(): string
+    private function generateUniqueSlug(): string
     {
         do {
-            $slug = substr(hash('xxh3', microtime(true).Str::uuid()), 0, 12);
+            $slug = mb_substr(hash('xxh3', microtime(true).Str::uuid()), 0, 12);
         } while (Appointment::where('slug', $slug)->exists());
 
         return $slug;

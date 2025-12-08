@@ -3,6 +3,7 @@ import { ref, watch } from 'vue';
 
 const props = defineProps<{
     modelValue: string;
+    validation: string
 }>();
 const emit = defineEmits(['update:modelValue']);
 
@@ -22,10 +23,12 @@ watch(() => props.modelValue, (val) => {
             rows="3"
             auto-grow
             variant="outlined"
-            hide-details
+            hide-details="auto"
             density="comfortable"
             class="form-input"
             placeholder="Descreva a situação"
+            :error="props.validation"
+            :error-messages="props.validation"
         />
     </div>
 </template>

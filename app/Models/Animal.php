@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\AnimalFactory;
@@ -12,12 +14,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Animal extends Model
+final class Animal extends Model
 {
     /** @use HasFactory<AnimalFactory> */
     use HasFactory, HasUuids, SoftDeletes;
+
+    public $incrementing = false;
+
     protected $fillable = [
-        'name', 'birthday', 'species', 'breed','slug', 'doctor_id',
+        'name', 'birthday', 'species', 'breed', 'slug', 'doctor_id',
     ];
 
     protected $casts = [
@@ -37,12 +42,27 @@ class Animal extends Model
     ];
 
     protected $keyType = 'string';
-    public $incrementing = false;
 
     public function getRouteKeyName(): string
     {
         return 'slug';
     }
+
+    public function owners(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'animal_user', 'animal_id', 'owner_id');
+    }
+
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class, 'animal_id', 'id');
+    }
+
+    public function doctor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'doctor_id', 'id');
+    }
+
     protected function registrationId(): Attribute
     {
         return Attribute::make(
@@ -61,7 +81,7 @@ class Animal extends Model
         $prefix = 'V';
 
         for ($i = 0; $i < 5; $i++) {
-            $groupChars = str_split($groups[$i]);
+            $groupChars = mb_str_split($groups[$i]);
             if (isset($groupChars[3])) {
                 $chars[] = $groupChars[3];
             } else {
@@ -71,21 +91,6 @@ class Animal extends Model
 
         $rawId = implode('', $chars); // Ex: A53A0
 
-        return "{$prefix}-".strtoupper($rawId); // Ex: V-A53A0
-    }
-
-    public function owners(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'animal_user', 'animal_id', 'owner_id');
-    }
-
-    public function appointments(): HasMany
-    {
-        return $this->hasMany(Appointment::class, 'animal_id', 'id');
-    }
-
-    public function doctor(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'doctor_id', 'id');
+        return "{$prefix}-".mb_strtoupper($rawId); // Ex: V-A53A0
     }
 }

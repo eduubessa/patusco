@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Appointment;
 
 use App\Helpers\Enums\UserRoles;
@@ -7,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 
-class DeleteAppointmentController extends Controller
+final class DeleteAppointmentController extends Controller
 {
     /**
      * Handle the incoming request.
