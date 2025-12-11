@@ -1,0 +1,21 @@
+* [33m49c4fd4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m, [m[1;31morigin/develop[m[33m)[m Continue project
+* [33meb8f1ea[m Continue
+* [33ma6ab990[m Continue: Refactoring create appointment and fix bugs
+* [33mac5c917[m Fix form errors and restrict fields by role
+* [33mecef72f[m feat: Implement fast-track customer search API
+* [33m660cc04[m feat: Implement fast-track customer search API
+* [33m98d6f9c[m feat(appointments): improved filters, date validation and customer search
+* [33m32144e0[m fix(tests): resolve bugs in appointment-related tests
+* [33m2d06ae1[m chore(tests/setup): scaffold all missing test files
+* [33m680cffd[m WIP: Corrected appointments tests and fixed related code issues
+* [33m24fdf3a[m WIP: Corrected appointments tests and fixed related code issues
+* [33mc2f1002[m WIP: Corrected appointments tests and fixed related code issues
+* [33m7347f44[m Tests, Controllers, Models, Actions, Helpers, Routes, Form Requests
+* [33m9fb9311[m Refactoring: Appointments,... I need continue
+* [33m101b8ef[m Big upgrade on security, database, models, migrations, middleware, controllers
+*   [33m7df8bc7[m Merge branch 'dev' into develop
+[32m|[m[33m\[m  
+[32m|[m * [33m26df9b2[m Continue
+* [33m|[m [33m950f396[m Continue development
+[33m|[m[33m/[m  
+* [33mfb72b5d[m List customers, and animals
